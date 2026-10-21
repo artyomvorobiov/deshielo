@@ -1,0 +1,17 @@
+# Xcode
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+DerivedData/
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+.swiftpm/
+# macOS
+.DS_Store
+# Python
+__pycache__/
+*.pyc
+# CI логи
+xcodebuild.log

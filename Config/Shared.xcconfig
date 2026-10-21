@@ -1,0 +1,19 @@
+// Общие настройки проекта Deshielo (действуют на все таргеты).
+//
+// BUNDLE_ID_PREFIX — уникальный префикс идентификаторов приложения.
+// Из него собираются:
+//   приложение  — $(BUNDLE_ID_PREFIX).deshielo
+//   виджеты     — $(BUNDLE_ID_PREFIX).deshielo.widgets
+//   App Group   — group.$(BUNDLE_ID_PREFIX).deshielo
+// Если Xcode пишет, что идентификатор занят, поменяйте префикс здесь — больше нигде менять не нужно.
+BUNDLE_ID_PREFIX = io.github.artyomvorobiov
+
+// Team ID из Apple Developer (10 символов). Можно оставить пустым
+// и выбрать команду в Xcode: таргет → Signing & Capabilities → Team.
+DEVELOPMENT_TEAM =
+
+APP_GROUP_IDENTIFIER = group.$(BUNDLE_ID_PREFIX).deshielo
+
+// Версия приложения и номер сборки — общие для приложения и виджетов.
+MARKETING_VERSION = 1.0
+CURRENT_PROJECT_VERSION = 1

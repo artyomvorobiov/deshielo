@@ -1,0 +1,66 @@
+name: iOS CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  content:
+    name: Проверка рецептов (JSON)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate content
+        run: python3 tools/validate_content.py
+
+  build:
+    name: Сборка и тесты (Xcode)
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Версия Xcode
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphonesimulator --show-sdk-version
+
+      - name: Выбор симулятора
+        id: sim
+        run: |
+          xcodebuild -project Deshielo.xcodeproj -scheme Deshielo -showdestinations 2>&1 | tee destinations.txt
+          DEST_ID=$(grep "platform:iOS Simulator" destinations.txt | grep "name:iPhone" | head -1 | sed -E 's/.*id:([^,]+),.*/\1/')
+          echo "Выбран симулятор: $DEST_ID"
+          echo "id=$DEST_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Сборка и тесты
+        run: |
+          set +e
+          xcodebuild test \
+            -project Deshielo.xcodeproj \
+            -scheme Deshielo \
+            -destination "id=${{ steps.sim.outputs.id }}" \
+            CODE_SIGNING_ALLOWED=NO \
+            > xcodebuild.log 2>&1
+          STATUS=$?
+          echo "::group::Ошибки компиляции"
+          grep -E "(error|fatal error):" xcodebuild.log | sort -u | head -300
+          echo "::endgroup::"
+          echo "::group::Упавшие тесты"
+          grep -E "(error: -\[|Test Case .* failed|XCTAssert)" xcodebuild.log | head -100
+          echo "::endgroup::"
+          tail -n 80 xcodebuild.log
+          exit $STATUS
+
+      - name: Лог сборки
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-log
+          path: xcodebuild.log
+          if-no-files-found: ignore
