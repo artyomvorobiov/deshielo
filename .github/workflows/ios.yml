@@ -71,22 +71,27 @@ jobs:
           TEST_RUNNER_SCREENSHOTS_DIR: ${{ github.workspace }}/screenshots
         run: |
           set +e
+          TEST_FLAGS=()
           if [ -n "$SIM_ID" ]; then
             ACTION=test
             DESTINATION="id=$SIM_ID"
+            # Зависший тест снимается через 10 минут, а не держит задачу до общего таймаута.
+            TEST_FLAGS=(-test-timeouts-enabled YES -default-test-execution-time-allowance 600)
           else
             ACTION=build-for-testing
             DESTINATION="generic/platform=iOS Simulator"
           fi
           echo "Действие: $ACTION, destination: $DESTINATION"
+          # Полный лог пишется в файл, а в журнал задачи сразу попадает ход сборки и тестов.
           xcodebuild "$ACTION" \
             -project Deshielo.xcodeproj \
             -scheme Deshielo \
             -destination "$DESTINATION" \
             -resultBundlePath build/Tests.xcresult \
+            "${TEST_FLAGS[@]}" \
             CODE_SIGNING_ALLOWED=NO \
-            > xcodebuild.log 2>&1
-          STATUS=$?
+            2>&1 | tee xcodebuild.log | grep --line-buffered -E "^Test (Suite|Case) |^ +t = |\*\* [A-Z -]+ \*\*"
+          STATUS=${PIPESTATUS[0]}
           echo "::group::Ошибки компиляции"
           grep -E "(error|fatal error):" xcodebuild.log | sort -u | head -300
           echo "::endgroup::"
