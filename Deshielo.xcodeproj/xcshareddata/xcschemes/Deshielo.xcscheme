@@ -41,6 +41,17 @@
                ReferencedContainer = "container:Deshielo.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D50000000000000000000043"
+               BuildableName = "DeshieloUITests.xctest"
+               BlueprintName = "DeshieloUITests"
+               ReferencedContainer = "container:Deshielo.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

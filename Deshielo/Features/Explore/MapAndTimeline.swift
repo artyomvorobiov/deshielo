@@ -70,7 +70,7 @@ private struct CountryMapCard: View {
                     Text(country.name).font(.display(.title3))
                     Text(stamped ? "Штамп в паспорте получен" : RussianPlural.phrase(recipes.count, "рецепт", "рецепта", "рецептов"))
                         .font(.caption)
-                        .foregroundStyle(stamped ? Theme.herb : .secondary)
+                        .foregroundStyle(stamped ? Theme.herb : Color.secondary)
                 }
                 Spacer()
                 Button(action: onClose) {

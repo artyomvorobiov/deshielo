@@ -25,6 +25,13 @@
 			remoteGlobalIDString = D50000000000000000000040;
 			remoteInfo = Deshielo;
 		};
+		D50000000000000000000074 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D50000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D50000000000000000000040;
+			remoteInfo = Deshielo;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -45,6 +52,7 @@
 		D50000000000000000000020 /* Deshielo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Deshielo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D50000000000000000000021 /* DeshieloWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DeshieloWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D50000000000000000000022 /* DeshieloTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeshieloTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D50000000000000000000023 /* DeshieloUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeshieloUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D50000000000000000000030 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 		D50000000000000000000031 /* Deshielo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Deshielo-Info.plist"; sourceTree = "<group>"; };
 		D50000000000000000000032 /* DeshieloWidgets-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DeshieloWidgets-Info.plist"; sourceTree = "<group>"; };
@@ -73,6 +81,11 @@
 			path = DeshieloTests;
 			sourceTree = "<group>";
 		};
+		D50000000000000000000014 /* DeshieloUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = DeshieloUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +110,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D5000000000000000000005B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -107,6 +127,7 @@
 				D50000000000000000000012 /* Shared */,
 				D50000000000000000000011 /* DeshieloWidgets */,
 				D50000000000000000000013 /* DeshieloTests */,
+				D50000000000000000000014 /* DeshieloUITests */,
 				D50000000000000000000004 /* Config */,
 				D50000000000000000000003 /* Products */,
 			);
@@ -118,6 +139,7 @@
 				D50000000000000000000020 /* Deshielo.app */,
 				D50000000000000000000021 /* DeshieloWidgetsExtension.appex */,
 				D50000000000000000000022 /* DeshieloTests.xctest */,
+				D50000000000000000000023 /* DeshieloUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -208,6 +230,29 @@
 			productReference = D50000000000000000000022 /* DeshieloTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		D50000000000000000000043 /* DeshieloUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D50000000000000000000084 /* Build configuration list for PBXNativeTarget "DeshieloUITests" */;
+			buildPhases = (
+				D5000000000000000000005A /* Sources */,
+				D5000000000000000000005B /* Frameworks */,
+				D5000000000000000000005C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D50000000000000000000075 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D50000000000000000000014 /* DeshieloUITests */,
+			);
+			name = DeshieloUITests;
+			packageProductDependencies = (
+			);
+			productName = DeshieloUITests;
+			productReference = D50000000000000000000023 /* DeshieloUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -225,6 +270,10 @@
 						CreatedOnToolsVersion = 16.0;
 					};
 					D50000000000000000000042 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = D50000000000000000000040;
+					};
+					D50000000000000000000043 = {
 						CreatedOnToolsVersion = 16.0;
 						TestTargetID = D50000000000000000000040;
 					};
@@ -247,6 +296,7 @@
 				D50000000000000000000040 /* Deshielo */,
 				D50000000000000000000041 /* DeshieloWidgetsExtension */,
 				D50000000000000000000042 /* DeshieloTests */,
+				D50000000000000000000043 /* DeshieloUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -267,6 +317,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D50000000000000000000059 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5000000000000000000005C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -297,6 +354,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D5000000000000000000005A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -309,6 +373,11 @@
 			isa = PBXTargetDependency;
 			target = D50000000000000000000040 /* Deshielo */;
 			targetProxy = D50000000000000000000071 /* PBXContainerItemProxy */;
+		};
+		D50000000000000000000075 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D50000000000000000000040 /* Deshielo */;
+			targetProxy = D50000000000000000000074 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -568,6 +637,34 @@
 			};
 			name = Release;
 		};
+		D50000000000000000000098 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX).deshielo.uitests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Deshielo;
+			};
+			name = Debug;
+		};
+		D50000000000000000000099 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX).deshielo.uitests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Deshielo;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -603,6 +700,15 @@
 			buildConfigurations = (
 				D50000000000000000000096 /* Debug */,
 				D50000000000000000000097 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D50000000000000000000084 /* Build configuration list for PBXNativeTarget "DeshieloUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D50000000000000000000098 /* Debug */,
+				D50000000000000000000099 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

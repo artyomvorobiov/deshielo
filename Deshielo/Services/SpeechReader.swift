@@ -1,7 +1,8 @@
 import AVFoundation
 
 /// Озвучивание шагов рецепта голосом iOS (русский голос, без интернета).
-final class SpeechReader: NSObject, AVSpeechSynthesizerDelegate {
+/// Используется только с главного потока, поэтому Sendable объявлен вручную.
+final class SpeechReader: NSObject, AVSpeechSynthesizerDelegate, @unchecked Sendable {
     private let synthesizer = AVSpeechSynthesizer()
 
     override init() {

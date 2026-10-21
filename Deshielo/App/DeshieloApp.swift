@@ -5,11 +5,19 @@ struct DeshieloApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     @State private var router = Router.shared
-    @State private var profile = ProfileStore()
-    @State private var shopping = ShoppingStore()
+    @State private var profile: ProfileStore
+    @State private var shopping: ShoppingStore
     @State private var timers = TimerCenter()
 
     private let catalog = Catalog.bundled
+
+    init() {
+        #if DEBUG
+        DemoData.seedIfRequested()
+        #endif
+        _profile = State(initialValue: ProfileStore())
+        _shopping = State(initialValue: ShoppingStore())
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -20,6 +28,9 @@ struct DeshieloApp: App {
                 .environment(shopping)
                 .environment(timers)
                 .tint(Theme.accent)
+                #if DEBUG
+                .preferredColorScheme(DemoData.colorScheme)
+                #endif
                 .onOpenURL { url in
                     if let link = DeepLink(url: url) {
                         router.open(link, catalog: catalog)

@@ -151,7 +151,7 @@ private struct ShoppingRow: View {
                     .foregroundStyle(item.isChecked ? Theme.herb : Color.secondary.opacity(0.5))
                 Text(item.name)
                     .strikethrough(item.isChecked)
-                    .foregroundStyle(item.isChecked ? .secondary : .primary)
+                    .foregroundStyle(item.isChecked ? Color.secondary : Color.primary)
                 Spacer()
                 Text(item.amountText)
                     .font(.subheadline.monospacedDigit())
