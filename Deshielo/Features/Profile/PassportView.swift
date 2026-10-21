@@ -112,7 +112,7 @@ struct StampView: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
                 .padding(.horizontal, 8)
-            Text(date.map { $0.formatted(.dateTime.day().month(.twoDigits).year(.twoDigits)) } ?? "—")
+            Text(date.map { $0.formatted(.dateTime.day(.twoDigits).month(.twoDigits).year(.twoDigits)) } ?? "—")
                 .font(.system(size: 9, weight: .medium, design: .monospaced))
         }
         .foregroundStyle(stamped ? Theme.accent : Color.secondary)

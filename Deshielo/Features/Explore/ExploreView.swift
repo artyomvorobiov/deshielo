@@ -124,7 +124,7 @@ struct ToolsRow: View {
                                 .multilineTextAlignment(.leading)
                         }
                         .padding(14)
-                        .frame(width: 128, height: 108, alignment: .topLeading)
+                        .frame(width: 140, height: 108, alignment: .topLeading)
                         .background(Theme.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                     }
                     .buttonStyle(.plain)
