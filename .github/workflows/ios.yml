@@ -33,28 +33,65 @@ jobs:
       - name: Выбор симулятора
         id: sim
         run: |
-          xcodebuild -project Deshielo.xcodeproj -scheme Deshielo -showdestinations 2>&1 | tee destinations.txt
-          DEST_ID=$(grep "platform:iOS Simulator" destinations.txt | grep "name:iPhone" | head -1 | sed -E 's/.*id:([^,]+),.*/\1/')
-          echo "Выбран симулятор: $DEST_ID"
-          echo "id=$DEST_ID" >> "$GITHUB_OUTPUT"
+          xcrun simctl list runtimes || true
+          RUNTIME=$(xcrun simctl list runtimes -j | python3 -c '
+          import json, sys
+          rts = [r for r in json.load(sys.stdin)["runtimes"] if r.get("platform") == "iOS" and r.get("isAvailable")]
+          rts.sort(key=lambda r: [int(x) for x in r["version"].split(".")])
+          print(rts[-1]["identifier"] if rts else "")
+          ')
+          echo "Среда iOS: ${RUNTIME:-нет}"
+          UDID=""
+          if [ -n "$RUNTIME" ]; then
+            UDID=$(RUNTIME="$RUNTIME" xcrun simctl list devices available -j | RUNTIME="$RUNTIME" python3 -c '
+          import json, os, sys
+          devices = json.load(sys.stdin)["devices"].get(os.environ["RUNTIME"], [])
+          phones = [d for d in devices if d["name"].startswith("iPhone")]
+          print(phones[0]["udid"] if phones else "")
+          ')
+            if [ -z "$UDID" ]; then
+              DEVTYPE=$(xcrun simctl list devicetypes -j | python3 -c '
+          import json, sys
+          types = [d for d in json.load(sys.stdin)["devicetypes"] if d["name"].startswith("iPhone")]
+          print(types[-1]["identifier"] if types else "")
+          ')
+              echo "Создаю симулятор $DEVTYPE"
+              UDID=$(xcrun simctl create "CI iPhone" "$DEVTYPE" "$RUNTIME" || true)
+            fi
+          fi
+          echo "Выбран симулятор: ${UDID:-нет (только сборка)}"
+          echo "id=$UDID" >> "$GITHUB_OUTPUT"
 
       - name: Сборка и тесты
+        env:
+          SIM_ID: ${{ steps.sim.outputs.id }}
         run: |
           set +e
-          xcodebuild test \
+          if [ -n "$SIM_ID" ]; then
+            ACTION=test
+            DESTINATION="id=$SIM_ID"
+          else
+            ACTION=build-for-testing
+            DESTINATION="generic/platform=iOS Simulator"
+          fi
+          echo "Действие: $ACTION, destination: $DESTINATION"
+          xcodebuild "$ACTION" \
             -project Deshielo.xcodeproj \
             -scheme Deshielo \
-            -destination "id=${{ steps.sim.outputs.id }}" \
+            -destination "$DESTINATION" \
             CODE_SIGNING_ALLOWED=NO \
             > xcodebuild.log 2>&1
           STATUS=$?
           echo "::group::Ошибки компиляции"
           grep -E "(error|fatal error):" xcodebuild.log | sort -u | head -300
           echo "::endgroup::"
+          echo "::group::Предупреждения"
+          grep -E "warning:" xcodebuild.log | grep -v "/Library/Developer/" | sort -u | head -150
+          echo "::endgroup::"
           echo "::group::Упавшие тесты"
           grep -E "(error: -\[|Test Case .* failed|XCTAssert)" xcodebuild.log | head -100
           echo "::endgroup::"
-          tail -n 80 xcodebuild.log
+          tail -n 60 xcodebuild.log
           exit $STATUS
 
       - name: Лог сборки
