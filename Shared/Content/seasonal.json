@@ -1,0 +1,14 @@
+[
+  {"month": 1, "note": "Время корнеплодов, квашеной капусты и цитрусовых — витамины зимы.", "keys": ["orange", "lemon", "sauerkraut", "beetroot", "carrot", "cabbage", "apple"]},
+  {"month": 2, "note": "Последние недели зимы: согревающие супы, цитрусы и запасы погреба.", "keys": ["orange", "lemon", "sauerkraut", "beetroot", "onion", "potato", "leek"]},
+  {"month": 3, "note": "Первая зелень на подоконнике и лук-порей — весна уже близко.", "keys": ["leek", "green-onion", "carrot", "apple", "lemon", "sauerkraut"]},
+  {"month": 4, "note": "Молодая зелень, руккола и мята — время лёгких блюд.", "keys": ["green-onion", "dill", "parsley", "arugula", "mint", "lettuce"]},
+  {"month": 5, "note": "Первые огурцы, зелёный лук и укроп — вкус весны.", "keys": ["green-onion", "dill", "arugula", "mint", "cucumber", "lettuce"]},
+  {"month": 6, "note": "Клубника, вишня и молодой картофель с укропом.", "keys": ["strawberry", "cherry", "cucumber", "zucchini", "dill", "potato"]},
+  {"month": 7, "note": "Малина, ягоды и кабачки — лето в разгаре.", "keys": ["raspberry", "cherry", "berries", "zucchini", "cucumber", "tomato", "dill"]},
+  {"month": 8, "note": "Помидоры, перцы, баклажаны и персики — самый щедрый месяц.", "keys": ["tomato", "eggplant", "bell-pepper", "zucchini", "mushroom", "pear", "peach", "berries"]},
+  {"month": 9, "note": "Грибы, яблоки и груши — время тёплых пирогов.", "keys": ["mushroom", "apple", "pear", "tomato", "bell-pepper", "cabbage"]},
+  {"month": 10, "note": "Капуста, свёкла и яблоки — время заготовок.", "keys": ["apple", "pear", "cabbage", "beetroot", "carrot", "mushroom", "cauliflower"]},
+  {"month": 11, "note": "Корнеплоды и квашеная капуста — время наваристых супов.", "keys": ["cabbage", "sauerkraut", "beetroot", "carrot", "apple", "celery", "leek"]},
+  {"month": 12, "note": "Мандарины, квашеная капуста и праздничные столы.", "keys": ["orange", "lemon", "sauerkraut", "apple", "beetroot", "potato"]}
+]

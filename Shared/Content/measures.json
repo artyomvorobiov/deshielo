@@ -1,0 +1,63 @@
+{
+  "volumes": [
+    {"id": "glass200", "name": "Гранёный стакан", "detail": "200 мл, до ободка", "ml": 200},
+    {"id": "glass250", "name": "Чайный стакан", "detail": "250 мл", "ml": 250},
+    {"id": "cup", "name": "Чашка (cup, США)", "detail": "240 мл", "ml": 240},
+    {"id": "tbsp", "name": "Столовая ложка", "detail": "15 мл, без горки", "ml": 15},
+    {"id": "dsp", "name": "Десертная ложка", "detail": "10 мл, без горки", "ml": 10},
+    {"id": "tsp", "name": "Чайная ложка", "detail": "5 мл, без горки", "ml": 5}
+  ],
+  "products": [
+    {"id": "flour", "name": "Мука пшеничная", "density": 0.65},
+    {"id": "sugar", "name": "Сахар", "density": 0.85},
+    {"id": "powdered-sugar", "name": "Сахарная пудра", "density": 0.6},
+    {"id": "salt", "name": "Соль мелкая", "density": 1.2},
+    {"id": "rice", "name": "Рис", "density": 0.85},
+    {"id": "buckwheat", "name": "Гречка", "density": 0.83},
+    {"id": "semolina", "name": "Манная крупа", "density": 0.8},
+    {"id": "oats", "name": "Овсяные хлопья", "density": 0.45},
+    {"id": "cocoa", "name": "Какао-порошок", "density": 0.45},
+    {"id": "starch", "name": "Крахмал", "density": 0.65},
+    {"id": "breadcrumbs", "name": "Панировочные сухари", "density": 0.5},
+    {"id": "ground-nuts", "name": "Молотые орехи", "density": 0.55},
+    {"id": "raisins", "name": "Изюм", "density": 0.65},
+    {"id": "water", "name": "Вода", "density": 1.0},
+    {"id": "milk", "name": "Молоко", "density": 1.03},
+    {"id": "cream", "name": "Сливки", "density": 1.0},
+    {"id": "sour-cream", "name": "Сметана", "density": 1.05},
+    {"id": "oil", "name": "Растительное масло", "density": 0.92},
+    {"id": "butter", "name": "Сливочное масло (растопленное)", "density": 0.91},
+    {"id": "honey", "name": "Мёд", "density": 1.42},
+    {"id": "jam", "name": "Варенье", "density": 1.3}
+  ],
+  "historic": [
+    {"id": "funt", "name": "Фунт", "origin": "Россия, до 1918 года", "kind": "mass", "value": 409.5},
+    {"id": "lot", "name": "Лот", "origin": "Россия, 1/32 фунта", "kind": "mass", "value": 12.8},
+    {"id": "zolotnik", "name": "Золотник", "origin": "Россия, 1/96 фунта", "kind": "mass", "value": 4.27},
+    {"id": "pud", "name": "Пуд", "origin": "Россия, 40 фунтов", "kind": "mass", "value": 16380},
+    {"id": "vedro", "name": "Ведро", "origin": "Россия", "kind": "volume", "value": 12299},
+    {"id": "shtof", "name": "Штоф", "origin": "Россия, 1/10 ведра", "kind": "volume", "value": 1229.9},
+    {"id": "butylka", "name": "Винная бутылка", "origin": "Россия, 1/16 ведра", "kind": "volume", "value": 768.7},
+    {"id": "charka", "name": "Чарка", "origin": "Россия, 1/100 ведра", "kind": "volume", "value": 123},
+    {"id": "shkalik", "name": "Шкалик", "origin": "Россия, 1/200 ведра", "kind": "volume", "value": 61.5},
+    {"id": "garnets", "name": "Гарнец", "origin": "Россия, мера сыпучих продуктов", "kind": "volume", "value": 3279.8},
+    {"id": "libra", "name": "Либра (римский фунт)", "origin": "Древний Рим", "kind": "mass", "value": 327.45},
+    {"id": "uncia", "name": "Римская унция", "origin": "Древний Рим, 1/12 либры", "kind": "mass", "value": 27.3},
+    {"id": "sextarius", "name": "Секстарий", "origin": "Древний Рим", "kind": "volume", "value": 546},
+    {"id": "pound", "name": "Английский фунт", "origin": "Великобритания и США", "kind": "mass", "value": 453.6},
+    {"id": "ounce", "name": "Унция", "origin": "Великобритания и США", "kind": "mass", "value": 28.35},
+    {"id": "pint", "name": "Британская пинта", "origin": "Великобритания", "kind": "volume", "value": 568.3},
+    {"id": "cup-us", "name": "Чашка (cup)", "origin": "США", "kind": "volume", "value": 236.6}
+  ],
+  "ovenMarks": [
+    {"gas": 1, "celsius": 140},
+    {"gas": 2, "celsius": 150},
+    {"gas": 3, "celsius": 170},
+    {"gas": 4, "celsius": 180},
+    {"gas": 5, "celsius": 190},
+    {"gas": 6, "celsius": 200},
+    {"gas": 7, "celsius": 220},
+    {"gas": 8, "celsius": 230},
+    {"gas": 9, "celsius": 240}
+  ]
+}

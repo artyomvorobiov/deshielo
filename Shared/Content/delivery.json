@@ -1,0 +1,12 @@
+[
+  {"id": "lavka", "name": "Яндекс Лавка", "kind": "groceries", "color": "#FFCC00", "homeURL": "https://lavka.yandex.ru", "searchURL": "https://lavka.yandex.ru/search?text={query}", "note": "Быстрая доставка продуктов"},
+  {"id": "samokat", "name": "Самокат", "kind": "groceries", "color": "#FF335F", "homeURL": "https://samokat.ru", "searchURL": "https://samokat.ru/search?value={query}", "note": "Доставка продуктов от 15 минут"},
+  {"id": "vkusvill", "name": "ВкусВилл", "kind": "groceries", "color": "#4CB648", "homeURL": "https://vkusvill.ru", "searchURL": "https://vkusvill.ru/search/?q={query}", "note": "Фермерские продукты и готовая еда"},
+  {"id": "perekrestok", "name": "Перекрёсток", "kind": "groceries", "color": "#0B6F3A", "homeURL": "https://www.perekrestok.ru", "searchURL": "https://www.perekrestok.ru/cat/search?search={query}", "note": "Супермаркет с доставкой"},
+  {"id": "kuper", "name": "Купер", "kind": "groceries", "color": "#1FA251", "homeURL": "https://kuper.ru", "searchURL": "https://kuper.ru/multisearch?q={query}", "note": "Продукты из разных магазинов"},
+  {"id": "ozon", "name": "Ozon fresh", "kind": "groceries", "color": "#005BFF", "homeURL": "https://www.ozon.ru", "searchURL": "https://www.ozon.ru/search/?text={query}", "note": "Продукты и редкие ингредиенты"},
+  {"id": "magnit", "name": "Магнит", "kind": "groceries", "color": "#E30613", "homeURL": "https://magnit.ru", "note": "Продукты у дома"},
+  {"id": "yandex-eda", "name": "Яндекс Еда", "kind": "restaurants", "color": "#FFCC00", "homeURL": "https://eda.yandex.ru", "searchURL": "https://eda.yandex.ru/search?query={query}", "note": "Готовые блюда из ресторанов"},
+  {"id": "yandex-maps", "name": "Яндекс Карты", "kind": "places", "color": "#FC3F1D", "homeURL": "https://yandex.ru/maps", "searchURL": "https://yandex.ru/maps/?text={query}", "note": "Рестораны рядом"},
+  {"id": "2gis", "name": "2ГИС", "kind": "places", "color": "#29A643", "homeURL": "https://2gis.ru", "searchURL": "https://2gis.ru/search/{query}", "note": "Рестораны рядом"}
+]
