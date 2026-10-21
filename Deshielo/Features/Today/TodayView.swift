@@ -13,13 +13,17 @@ struct TodayView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 32) {
-                header
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(Self.dateText(today))
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.secondary)
 
-                if let recipe = DailyPick.recipe(for: today, in: catalog) {
-                    NavigationLink(value: Route.recipe(recipe.id)) {
-                        RecipeCard(recipe: recipe, eyebrow: "Рецепт дня", height: 300)
+                    if let recipe = DailyPick.recipe(for: today, in: catalog) {
+                        NavigationLink(value: Route.recipe(recipe.id)) {
+                            RecipeCard(recipe: recipe, eyebrow: "Рецепт дня", height: 300)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
 
                 if !timers.timers.isEmpty {
@@ -45,17 +49,6 @@ struct TodayView: View {
         }
         .screenBackground()
         .navigationTitle("Сегодня")
-    }
-
-    private var header: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(Self.dateText(today))
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.secondary)
-            Text("Что приготовим?")
-                .font(.display(.largeTitle, weight: .bold))
-        }
-        .padding(.top, 4)
     }
 
     @ViewBuilder

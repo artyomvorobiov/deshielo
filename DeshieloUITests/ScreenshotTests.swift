@@ -98,7 +98,9 @@ final class ScreenshotTests: XCTestCase {
     @MainActor
     private func launch(dark: Bool = false) {
         app = XCUIApplication()
-        app.launchArguments = ["-DemoData"] + (dark ? ["-DemoDark"] : [])
+        // Русская локаль симулятора — чтобы и карта, и системные подписи на скриншотах были на русском.
+        app.launchArguments = ["-DemoData", "-AppleLanguages", "(ru)", "-AppleLocale", "ru_RU"]
+            + (dark ? ["-DemoDark"] : [])
         app.launch()
         XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 30), "Приложение не показало вкладки")
     }
@@ -136,7 +138,8 @@ final class ScreenshotTests: XCTestCase {
         button.tap()
     }
 
-    /// Нажимает на первый элемент, в подписи которого есть текст. Если его не видно — прокручивает экран.
+    /// Нажимает на первый элемент, в подписи которого есть текст.
+    /// Если его не видно или он под панелью вкладок — прокручивает экран.
     @MainActor
     @discardableResult
     private func tapElement(containing text: String) -> Bool {
@@ -144,16 +147,24 @@ final class ScreenshotTests: XCTestCase {
             .matching(NSPredicate(format: "label CONTAINS %@", text))
             .firstMatch
         var swipes = 0
-        while !(element.exists && element.isHittable) && swipes < 5 {
-            app.swipeUp()
+        while !isReachable(element) && swipes < 5 {
+            app.swipeUp(velocity: .slow)
             swipes += 1
         }
-        guard element.exists && element.isHittable else {
+        guard isReachable(element) else {
             XCTFail("Не найден элемент «\(text)»")
             return false
         }
         element.tap()
         return true
+    }
+
+    /// Элемент на экране и не закрыт плавающей панелью вкладок: иначе нажатие достанется ей.
+    @MainActor
+    private func isReachable(_ element: XCUIElement) -> Bool {
+        guard element.exists, element.isHittable else { return false }
+        let tabBar = app.tabBars.firstMatch
+        return !tabBar.exists || element.frame.maxY <= tabBar.frame.minY
     }
 
     @MainActor

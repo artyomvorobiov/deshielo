@@ -56,7 +56,7 @@ struct PassportView: View {
         let usedEras = Set(catalog.datedRecipes.compactMap { catalog.era(for: $0.year)?.id })
         ScrollView {
             VStack(alignment: .leading, spacing: 26) {
-                PassportSummaryCard(passport: passport)
+                PassportSummaryCard(passport: passport, showsHeader: false)
                     .card()
 
                 SectionHeader(title: "Страны", subtitle: "Штамп ставится, когда вы отмечаете приготовленное блюдо")

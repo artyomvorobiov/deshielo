@@ -292,29 +292,64 @@ struct StepCard: View {
 }
 
 /// Иконка шага по ключевым словам: огонь, духовка, холодильник, нож…
+/// Выигрывает первое действие — сначала в заголовке шага, потом в тексте.
+/// Глаголы узнаются только в повелительной форме и инфинитиве («нарежьте», «дайте остыть»),
+/// поэтому «нарезанные» или «охлаждённые» в списке продуктов не сбивают выбор.
 enum StepIcon {
-    private static let rules: [(symbol: String, keys: [String])] = [
-        ("fork.knife", ["подайте", "подав", "сервир"]),
-        ("snowflake", ["холодильник", "морозилк", "охлад", "заморо", "остуд", "застуд"]),
-        ("oven", ["духовк", "запек", "выпек"]),
-        ("flame", ["обжар", "жарьте", "сковород", "карамел", "вытоп", "раскал"]),
-        ("drop", ["свар", "варите", "кипят", "бульон", "бланшир", "отвар"]),
-        ("scissors", ["нарез", "наруб", "нашинк", "натр", "измельч"]),
-        ("hand.raised", ["замес", "тесто", "лепит", "слепит", "сформ"]),
-        ("tornado", ["взбе", "венчик", "миксер", "пробейте"]),
-        ("hourglass", ["оставьте", "настаива", "маринуй", "отдохн", "расстой", "посол"])
+    private struct Rule {
+        let symbol: String
+        /// Начала глаголов: «обжар» — «обжарьте», «обжарить».
+        let verbs: [String]
+        /// Начала остальных слов: «духовк» — «в духовке».
+        var nouns: [String] = []
+    }
+
+    private static let rules: [Rule] = [
+        Rule(symbol: "fork.knife", verbs: ["пода", "сервир", "укра"]),
+        Rule(symbol: "snowflake",
+             verbs: ["охлад", "охлажд", "остуд", "осты", "заморо", "подмор", "засты", "застуд"],
+             nouns: ["холодильник", "морозилк"]),
+        Rule(symbol: "oven", verbs: ["запек", "запеч", "выпек", "пеки", "испек"], nouns: ["духовк", "выпечк"]),
+        Rule(symbol: "flame",
+             verbs: ["обжар", "жар", "поджар", "карамел", "вытоп", "раскал", "туши", "потуш", "пассер",
+                     "припуст", "растоп", "прогре", "нагре", "прокал", "подрумян", "обожг"],
+             nouns: ["карамел"]),
+        Rule(symbol: "drop",
+             verbs: ["свар", "вари", "отвар", "провар", "увар", "завар", "вскипят", "кипят", "закип", "бланшир"],
+             nouns: ["кипен", "кипящ", "кипят", "редукц"]),
+        Rule(symbol: "scissors",
+             verbs: ["нарез", "нареж", "наруб", "поруб", "нашинк", "натрит", "натер", "измельч",
+                     "надрез", "надреж", "разрез", "разреж", "срез", "срежь", "очист"]),
+        Rule(symbol: "hand.raised",
+             verbs: ["замес", "лепит", "слеп", "сформ", "собер", "сверн", "заверн", "оберн", "раскат", "фарширу"],
+             nouns: ["тест", "начинк"]),
+        Rule(symbol: "paintbrush.pointed", verbs: ["смаж", "промаж", "глазир"]),
+        Rule(symbol: "tornado",
+             verbs: ["взбе", "взбив", "пробе", "смеша", "перемеш", "вмеша", "вмешив", "размеша",
+                     "разотр", "растир", "соедин", "смонтир", "эмульгир"],
+             nouns: ["венчик", "миксер", "блендер"]),
+        Rule(symbol: "hourglass",
+             verbs: ["остав", "настаива", "настой", "настоя", "маринуй", "замарин", "отдохн", "расстой",
+                     "постоя", "томи", "замоч", "выдерж", "подожд"],
+             nouns: ["посол", "маринад"])
     ]
 
     static func symbol(for step: RecipeStep) -> String {
-        if let title = step.title?.lowercased(), let symbol = match(title) {
+        if let title = step.title, let symbol = firstAction(in: title) {
             return symbol
         }
-        return match(step.text.lowercased()) ?? "circle.dotted"
+        return firstAction(in: step.text) ?? "circle.dotted"
     }
 
-    private static func match(_ text: String) -> String? {
-        for rule in rules where rule.keys.contains(where: { text.contains($0) }) {
-            return rule.symbol
+    private static func firstAction(in text: String) -> String? {
+        let words = text.lowercased().split(whereSeparator: { !$0.isLetter })
+        for (index, word) in words.enumerated() {
+            // «Не перемешивайте» — это как раз не действие.
+            if index > 0 && words[index - 1] == "не" { continue }
+            let isVerb = ["те", "ть", "ться", "тесь"].contains { word.hasSuffix($0) }
+            for rule in rules where (isVerb ? rule.verbs : rule.nouns).contains(where: { word.hasPrefix($0) }) {
+                return rule.symbol
+            }
         }
         return nil
     }

@@ -71,29 +71,33 @@ private struct CountRow: View {
     }
 }
 
-/// Карточка паспорта в профиле.
+/// Карточка паспорта: в профиле — с заголовком, на экране паспорта — только цифры.
 struct PassportSummaryCard: View {
     let passport: PassportSummary
+    var showsHeader = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Кулинарный паспорт")
-                        .font(.display(.title3))
-                    Text("Готовьте блюда разных стран и эпох — собирайте штампы")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+            if showsHeader {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Кулинарный паспорт")
+                            .font(.display(.title3))
+                        Text("Готовьте блюда разных стран и эпох — собирайте штампы")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "globe.europe.africa.fill")
+                        .font(.largeTitle)
+                        .foregroundStyle(Theme.accent)
                 }
-                Spacer()
-                Image(systemName: "globe.europe.africa.fill")
-                    .font(.largeTitle)
-                    .foregroundStyle(Theme.accent)
             }
             HStack(spacing: 0) {
                 PassportStat(value: "\(passport.countriesCount)/\(passport.totalCountries)", caption: "страны")
                 PassportStat(value: "\(passport.eraIDs.count)/\(passport.totalEras)", caption: "эпохи")
-                PassportStat(value: "\(passport.dishesCount)", caption: "блюда")
+                PassportStat(value: "\(passport.dishesCount)",
+                             caption: RussianPlural.form(passport.dishesCount, "блюдо", "блюда", "блюд"))
             }
             ProgressView(value: Double(passport.countriesCount), total: Double(max(passport.totalCountries, 1)))
                 .tint(Theme.accent)

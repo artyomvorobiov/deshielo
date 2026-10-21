@@ -100,3 +100,32 @@ final class LinkAndMatchTests: XCTestCase {
         XCTAssertTrue(passport.eraIDs.contains("ancient"))
     }
 }
+
+final class StepIconTests: XCTestCase {
+    private func symbol(_ title: String?, _ text: String) -> String {
+        StepIcon.symbol(for: RecipeStep(title: title, text: text))
+    }
+
+    func testFirstActionWins() {
+        XCTAssertEqual(symbol("Обжарьте вырезку", "Посолите и поперчите. Остудите."), "flame")
+        XCTAssertEqual(symbol("Соберите рулет", "Заморозьте на 20 минут."), "hand.raised")
+        XCTAssertEqual(symbol("Томите под крышкой", "Соберите рис горкой и накройте."), "hourglass")
+        XCTAssertEqual(symbol(nil, "Нарежьте лук и обжарьте до золотистого цвета."), "scissors")
+    }
+
+    func testKeysMatchOnlyWordStarts() {
+        // «Поставьте» содержит «оставьте», а «натрия» начинается как «натрите».
+        XCTAssertEqual(symbol("Поставьте воду", "Вскипятите 3 литра воды."), "drop")
+        XCTAssertEqual(symbol(nil, "Добавьте альгинат натрия в воду."), "circle.dotted")
+    }
+
+    func testParticiplesAndNegationsAreSkipped() {
+        XCTAssertEqual(symbol(nil, "Положите охлаждённые сливки и не перемешивайте. Варите 5 минут."), "drop")
+        XCTAssertEqual(symbol(nil, "Добавьте нарезанные овощи и тушите."), "flame")
+    }
+
+    func testPlacesCount() {
+        XCTAssertEqual(symbol(nil, "Переложите в форму и поставьте в духовку."), "oven")
+        XCTAssertEqual(symbol(nil, "Накройте и уберите в холодильник на ночь."), "snowflake")
+    }
+}

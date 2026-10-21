@@ -120,10 +120,11 @@ struct ToolsRow: View {
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(.primary)
                                 .lineLimit(2)
+                                .minimumScaleFactor(0.8)
                                 .multilineTextAlignment(.leading)
                         }
                         .padding(14)
-                        .frame(width: 118, height: 108, alignment: .topLeading)
+                        .frame(width: 128, height: 108, alignment: .topLeading)
                         .background(Theme.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                     }
                     .buttonStyle(.plain)
