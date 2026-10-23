@@ -4,6 +4,7 @@ import SwiftUI
 struct ProfileView: View {
     @Environment(\.catalog) private var catalog
     @Environment(ProfileStore.self) private var profile
+    @Environment(CommunityStore.self) private var community
 
     var body: some View {
         let passport = PassportSummary(profile: profile.profile, catalog: catalog)
@@ -26,6 +27,15 @@ struct ProfileView: View {
                 }
                 NavigationLink(value: Route.fridge) {
                     CountRow(title: "Из холодильника", systemImage: "refrigerator", count: profile.profile.pantry.count)
+                }
+            }
+
+            if community.isConfigured {
+                Section("Сообщество") {
+                    NavigationLink(value: Route.communityAccount) {
+                        Label(community.user.map { "Аккаунт: \($0.name)" } ?? "Войти в сообщество",
+                              systemImage: "person.2")
+                    }
                 }
             }
 
@@ -154,50 +164,86 @@ struct FavoritesView: View {
     }
 }
 
-/// Дневник готовки: что, когда, с какой оценкой.
+/// Дневник готовки: что, когда, с какой оценкой и как выглядело.
 struct JournalView: View {
     @Environment(\.catalog) private var catalog
     @Environment(ProfileStore.self) private var profile
 
+    @State private var viewer: JournalPhotoItem?
+
+    /// Запись дневника и то, куда она ведёт: рецепт каталога или сообщества.
+    private struct Item: Identifiable {
+        let entry: CookedEntry
+        let recipe: Recipe?
+        let route: Route?
+
+        var id: UUID { entry.id }
+        var title: String { recipe?.title ?? entry.title ?? "Рецепт" }
+    }
+
+    private var items: [Item] {
+        profile.cookedEntries.compactMap { entry -> Item? in
+            if let recipe = catalog.recipe(entry.recipeID) {
+                return Item(entry: entry, recipe: recipe, route: .recipe(recipe.id))
+            }
+            if entry.recipeID.hasPrefix(Recipe.communityPrefix) {
+                let id = String(entry.recipeID.dropFirst(Recipe.communityPrefix.count))
+                return Item(entry: entry, recipe: nil, route: .communityRecipe(id))
+            }
+            return nil
+        }
+    }
+
     var body: some View {
-        let entries = profile.cookedEntries
+        let items = items
         Group {
-            if entries.isEmpty {
+            if items.isEmpty {
                 ContentUnavailableView("Дневник пуст",
                                        systemImage: "book.closed",
-                                       description: Text("Отмечайте приготовленные блюда — здесь появится история вашей кухни с оценками и заметками."))
+                                       description: Text("Отмечайте приготовленные блюда — здесь появится история вашей кухни с оценками, заметками и фото."))
             } else {
                 List {
-                    ForEach(entries) { entry in
-                        if let recipe = catalog.recipe(entry.recipeID) {
-                            NavigationLink(value: Route.recipe(recipe.id)) {
-                                JournalRow(entry: entry, recipe: recipe)
+                    ForEach(items) { item in
+                        NavigationLink(value: item.route) {
+                            JournalRow(entry: item.entry, recipe: item.recipe, title: item.title) { name in
+                                viewer = JournalPhotoItem(name: name)
                             }
                         }
                     }
                     .onDelete { offsets in
                         for offset in offsets {
-                            profile.deleteCooked(entries[offset])
+                            profile.deleteCooked(items[offset].entry)
                         }
                     }
                 }
             }
         }
         .navigationTitle("Дневник готовки")
+        .fullScreenCover(item: $viewer) { item in
+            JournalPhotoViewer(name: item.name)
+        }
     }
+}
+
+private struct JournalPhotoItem: Identifiable {
+    let name: String
+
+    var id: String { name }
 }
 
 private struct JournalRow: View {
     let entry: CookedEntry
-    let recipe: Recipe
+    let recipe: Recipe?
+    let title: String
+    let onPhoto: (String) -> Void
 
     var body: some View {
         HStack(spacing: 12) {
-            DishArtwork(recipe: recipe, showsYear: false)
-                .frame(width: 52, height: 52)
+            cover
+                .frame(width: 56, height: 56)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             VStack(alignment: .leading, spacing: 3) {
-                Text(recipe.title)
+                Text(title)
                     .font(.headline)
                 Text(entry.date.formatted(date: .abbreviated, time: .omitted))
                     .font(.caption)
@@ -214,6 +260,54 @@ private struct JournalRow: View {
                         .lineLimit(2)
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var cover: some View {
+        if let name = entry.photo, let image = JournalPhotos.image(named: name) {
+            Button {
+                onPhoto(name)
+            } label: {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            }
+            .buttonStyle(.borderless)
+            .accessibilityLabel("Фото результата")
+        } else if let recipe {
+            DishArtwork(recipe: recipe, showsYear: false)
+        } else {
+            DishArtwork(recipe: .artworkPlaceholder(id: entry.recipeID, palette: ["#B4532A", "#F3E3B5", "#5E7F37"]),
+                        showsYear: false)
+        }
+    }
+}
+
+/// Фото из дневника на весь экран.
+private struct JournalPhotoViewer: View {
+    let name: String
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            Color.black.ignoresSafeArea()
+            if let image = JournalPhotos.image(named: name) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.headline)
+                    .frame(width: 40, height: 40)
+                    .background(.ultraThinMaterial, in: Circle())
+            }
+            .padding()
+            .accessibilityLabel("Закрыть")
         }
     }
 }

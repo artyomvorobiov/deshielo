@@ -8,6 +8,7 @@ struct DeshieloApp: App {
     @State private var profile: ProfileStore
     @State private var shopping: ShoppingStore
     @State private var timers = TimerCenter()
+    @State private var community: CommunityStore
 
     private let catalog = Catalog.bundled
 
@@ -15,8 +16,11 @@ struct DeshieloApp: App {
         #if DEBUG
         DemoData.seedIfRequested()
         #endif
+        // Фото сообщества сервер отдаёт с долгим сроком хранения — держим их в кеше.
+        URLCache.shared = URLCache(memoryCapacity: 48 * 1024 * 1024, diskCapacity: 256 * 1024 * 1024)
         _profile = State(initialValue: ProfileStore())
         _shopping = State(initialValue: ShoppingStore())
+        _community = State(initialValue: CommunityStore.make())
     }
 
     var body: some Scene {
@@ -27,6 +31,7 @@ struct DeshieloApp: App {
                 .environment(profile)
                 .environment(shopping)
                 .environment(timers)
+                .environment(community)
                 .tint(Theme.accent)
                 #if DEBUG
                 .preferredColorScheme(DemoData.colorScheme)
@@ -46,6 +51,8 @@ struct DeshieloApp: App {
                     Task.detached(priority: .background) {
                         SpotlightIndexer.index(content)
                     }
+                    await community.refreshSession()
+                    await community.loadCatalogRatings()
                 }
         }
         .onChange(of: scenePhase) { _, phase in

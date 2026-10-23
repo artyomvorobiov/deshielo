@@ -5,6 +5,7 @@ struct RootView: View {
     @Environment(Router.self) private var router
     @Environment(ShoppingStore.self) private var shopping
     @Environment(TimerCenter.self) private var timers
+    @Environment(CommunityStore.self) private var community
 
     var body: some View {
         @Bindable var router = router
@@ -23,6 +24,16 @@ struct RootView: View {
             .tabItem { Label("Рецепты", systemImage: "book") }
             .tag(AppTab.explore)
 
+            // Без сервера сообщества вкладки нет: приложение остаётся полноценной книгой рецептов.
+            if community.isConfigured {
+                NavigationStack(path: $router.communityPath) {
+                    CommunityView()
+                        .routeDestinations()
+                }
+                .tabItem { Label("Сообщество", systemImage: "person.2") }
+                .tag(AppTab.community)
+            }
+
             NavigationStack(path: $router.shoppingPath) {
                 ShoppingListView()
                     .routeDestinations()
@@ -39,8 +50,11 @@ struct RootView: View {
             .tag(AppTab.profile)
         }
         .fullScreenCover(item: $router.cooking) { request in
-            if let recipe = catalog.recipe(request.recipeID) {
-                CookingModeView(recipe: recipe, servings: request.servings ?? recipe.servings)
+            CookingModeView(recipe: request.recipe, servings: request.servings ?? request.recipe.servings)
+        }
+        .onChange(of: router.tab) { _, tab in
+            if tab == .community && !community.isConfigured {
+                router.tab = .today
             }
         }
         .sensoryFeedback(.success, trigger: timers.finishedCount)
@@ -108,6 +122,12 @@ struct RouteDestinations: ViewModifier {
             MealPlanView()
         case .settings:
             SettingsView()
+        case .communityRecipe(let id):
+            CommunityRecipeView(id: id)
+        case .communityAccount:
+            CommunityAccountView()
+        case .communityRules:
+            CommunityRulesView()
         }
     }
 }

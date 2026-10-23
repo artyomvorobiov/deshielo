@@ -120,7 +120,8 @@ enum ShoppingMerger {
                                        unit: amount == nil ? nil : ingredient.unit,
                                        key: ingredient.key,
                                        aisle: pantryItem?.category ?? .other,
-                                       recipeIDs: [recipe.id]))
+                                       recipeIDs: [recipe.id],
+                                       recipeTitle: recipe.communityID == nil ? nil : recipe.title))
         }
         return result
     }

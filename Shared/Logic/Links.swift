@@ -15,6 +15,8 @@ enum DeepLink: Hashable, Sendable {
     case recipeOfTheDay
     case shopping
     case passport
+    /// Рецепт из сообщества: deshielo://community/<id>.
+    case communityRecipe(String)
 
     static let scheme = "deshielo"
 
@@ -36,6 +38,9 @@ enum DeepLink: Hashable, Sendable {
             components.host = "shopping"
         case .passport:
             components.host = "passport"
+        case .communityRecipe(let id):
+            components.host = "community"
+            components.path = "/\(id)"
         }
         return components.url ?? URL(fileURLWithPath: "/")
     }
@@ -54,6 +59,9 @@ enum DeepLink: Hashable, Sendable {
         case "cook":
             guard let id else { return nil }
             self = .cook(id)
+        case "community":
+            guard let id else { return nil }
+            self = .communityRecipe(id)
         default:
             return nil
         }

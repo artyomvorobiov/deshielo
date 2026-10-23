@@ -17,3 +17,10 @@ APP_GROUP_IDENTIFIER = group.$(BUNDLE_ID_PREFIX).deshielo
 // Версия приложения и номер сборки — общие для приложения и виджетов.
 MARKETING_VERSION = 1.0
 CURRENT_PROJECT_VERSION = 1
+
+// Сервер сообщества (PocketBase): адрес без https://, например community.example.ru.
+// Пусто — вкладка «Сообщество» подскажет, что сервер не подключён. Как его запустить — docs/COMMUNITY.md.
+COMMUNITY_SERVER =
+
+// Почта модератора: её покажут в правилах сообщества (App Store требует контакт для жалоб).
+COMMUNITY_SUPPORT_EMAIL =

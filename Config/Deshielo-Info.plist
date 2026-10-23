@@ -15,6 +15,17 @@
 			</array>
 		</dict>
 	</array>
+	<key>CommunityServer</key>
+	<string>$(COMMUNITY_SERVER)</string>
+	<key>CommunitySupportEmail</key>
+	<string>$(COMMUNITY_SUPPORT_EMAIL)</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Камера нужна, чтобы сфотографировать готовое блюдо для дневника, отзыва или своего рецепта.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSSupportsLiveActivities</key>

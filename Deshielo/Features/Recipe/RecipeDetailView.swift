@@ -9,6 +9,7 @@ struct RecipeDetailView: View {
     @Environment(ShoppingStore.self) private var shopping
     @Environment(TimerCenter.self) private var timers
     @Environment(Router.self) private var router
+    @Environment(CommunityStore.self) private var community
 
     @State private var servings: Int
     @State private var checked: Set<Int> = []
@@ -44,6 +45,8 @@ struct RecipeDetailView: View {
                              onTimer: startTimer)
                 extras
                 personal
+                ReviewsSection(target: .catalog(recipe.id), recipeTitle: recipe.title,
+                               summary: community.rating(forCatalog: recipe.id)) { toast = $0 }
                 Text(disclaimer)
                     .font(.caption)
                     .foregroundStyle(.tertiary)
@@ -100,6 +103,15 @@ struct RecipeDetailView: View {
                     Text(subtitle)
                         .font(.system(.title3, design: .serif))
                         .foregroundStyle(.secondary)
+                }
+                if let rating = community.rating(forCatalog: recipe.id) {
+                    HStack(spacing: 6) {
+                        RatingStars(value: rating.average)
+                        Text(RatingText.summary(rating))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .accessibilityElement(children: .combine)
                 }
                 if let chef = catalog.chef(recipe.chef) {
                     NavigationLink(value: Route.chef(chef.id)) {
@@ -170,13 +182,12 @@ struct RecipeDetailView: View {
                 toast = "Добавлено в меню: \(MealPlanView.dayTitle(day).lowercased())"
             }
         case .cooked:
-            CookedSheet(recipe: recipe) { rating, note in
-                let hadStamp = recipe.country.map { PassportSummary(profile: profile.profile, catalog: catalog).stamps[$0] != nil } ?? true
-                profile.markCooked(recipe.id, rating: rating, note: note)
-                if !hadStamp, let country = catalog.country(recipe.country) {
-                    toast = "Новый штамп в паспорте: \(country.flag) \(country.name)"
-                } else {
-                    toast = "Записано в дневник готовки"
+            CookedSheet(recipe: recipe) { result in
+                toast = CookedRecorder.record(result, recipe: recipe, profile: profile, catalog: catalog)
+                Task {
+                    if let message = await CookedRecorder.publish(result, recipe: recipe, community: community) {
+                        toast = message
+                    }
                 }
             }
         case .order:
@@ -297,7 +308,7 @@ struct RecipeDetailView: View {
     }
 }
 
-private struct MetaCell: View {
+struct MetaCell: View {
     let value: String
     let caption: String
 

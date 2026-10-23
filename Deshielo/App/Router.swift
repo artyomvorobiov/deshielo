@@ -2,7 +2,7 @@ import Observation
 import SwiftUI
 
 enum AppTab: Hashable {
-    case today, explore, shopping, profile
+    case today, explore, community, shopping, profile
 }
 
 /// Экраны, на которые можно перейти внутри вкладки.
@@ -22,13 +22,17 @@ enum Route: Hashable {
     case favorites
     case mealPlan
     case settings
+    case communityRecipe(String)
+    case communityAccount
+    case communityRules
 }
 
+/// Что готовим: рецепт из каталога или из сообщества — поэтому передаётся сам рецепт, а не id.
 struct CookingRequest: Identifiable, Hashable {
-    let recipeID: String
+    let recipe: Recipe
     let servings: Int?
 
-    var id: String { recipeID }
+    var id: String { recipe.id }
 }
 
 /// Навигация приложения: выбранная вкладка, стеки экранов и режим готовки.
@@ -41,14 +45,18 @@ final class Router {
     var tab: AppTab = .today
     var todayPath: [Route] = []
     var explorePath: [Route] = []
+    var communityPath: [Route] = []
     var shoppingPath: [Route] = []
     var profilePath: [Route] = []
     var cooking: CookingRequest?
+    /// Запрос из поиска каталога, который нужно повторить в сообществе.
+    var communitySearch: String?
 
     func push(_ route: Route) {
         switch tab {
         case .today: todayPath.append(route)
         case .explore: explorePath.append(route)
+        case .community: communityPath.append(route)
         case .shopping: shoppingPath.append(route)
         case .profile: profilePath.append(route)
         }
@@ -60,6 +68,11 @@ final class Router {
             tab = .today
             todayPath = []
         case .recipe(let id):
+            // Таймеры рецептов сообщества ссылаются на «community:<id>».
+            if id.hasPrefix(Recipe.communityPrefix) {
+                open(.communityRecipe(String(id.dropFirst(Recipe.communityPrefix.count))), catalog: catalog)
+                return
+            }
             guard catalog.recipe(id) != nil else { return }
             tab = .today
             todayPath = [.recipe(id)]
@@ -68,8 +81,11 @@ final class Router {
             tab = .today
             todayPath = [.recipe(recipe.id)]
         case .cook(let id):
-            guard catalog.recipe(id) != nil else { return }
-            cooking = CookingRequest(recipeID: id, servings: nil)
+            guard let recipe = catalog.recipe(id) else { return }
+            cooking = CookingRequest(recipe: recipe, servings: nil)
+        case .communityRecipe(let id):
+            tab = .community
+            communityPath = [.communityRecipe(id)]
         case .shopping:
             tab = .shopping
             shoppingPath = []
@@ -80,7 +96,14 @@ final class Router {
     }
 
     func startCooking(_ recipe: Recipe, servings: Int) {
-        cooking = CookingRequest(recipeID: recipe.id, servings: servings)
+        cooking = CookingRequest(recipe: recipe, servings: servings)
+    }
+
+    /// Повторить поиск из каталога среди рецептов сообщества.
+    func searchCommunity(_ text: String) {
+        communitySearch = text
+        communityPath = []
+        tab = .community
     }
 }
 

@@ -9,15 +9,33 @@ enum DemoData {
     static let dataArgument = "-DemoData"
     static let darkArgument = "-DemoDark"
 
+    static var isEnabled: Bool { ProcessInfo.processInfo.arguments.contains(dataArgument) }
+
     static var colorScheme: ColorScheme? {
         ProcessInfo.processInfo.arguments.contains(darkArgument) ? .dark : nil
     }
 
     /// Вызывается до создания хранилищ, поэтому они сразу читают демо-данные.
+    @MainActor
     static func seedIfRequested(catalog: Catalog = .bundled) {
-        guard ProcessInfo.processInfo.arguments.contains(dataArgument) else { return }
-        ProfileStorage.save(profile(catalog: catalog))
+        guard isEnabled else { return }
+        JournalPhotos.deleteAll()
+        var demoProfile = profile(catalog: catalog)
+        // Пара записей дневника — с «фото результата» (генеративная обложка блюда).
+        for index in demoProfile.cooked.indices.prefix(2) {
+            if let recipe = catalog.recipe(demoProfile.cooked[index].recipeID) {
+                demoProfile.cooked[index].photo = journalPhoto(for: recipe)
+            }
+        }
+        ProfileStorage.save(demoProfile)
         ShoppingListStorage.save(shoppingList(catalog: catalog))
+    }
+
+    @MainActor
+    private static func journalPhoto(for recipe: Recipe) -> String? {
+        let renderer = ImageRenderer(content: DishArtwork(recipe: recipe, showsYear: false).frame(width: 600, height: 600))
+        renderer.scale = 1
+        return renderer.uiImage.flatMap { JournalPhotos.save($0) }
     }
 
     private static func profile(catalog: Catalog) -> UserProfile {

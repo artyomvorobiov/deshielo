@@ -10,6 +10,7 @@ struct CookingModeView: View {
     @Environment(\.catalog) private var catalog
     @Environment(TimerCenter.self) private var timers
     @Environment(ProfileStore.self) private var profile
+    @Environment(CommunityStore.self) private var community
 
     @State private var index = 0
     @State private var speech = SpeechReader()
@@ -17,6 +18,8 @@ struct CookingModeView: View {
     @State private var activeTerm: GlossaryTerm?
     @State private var rating = 0
     @State private var saved = false
+    @State private var showsCookedSheet = false
+    @State private var status: String?
 
     private var stepCount: Int { recipe.steps.count }
     private var isFinishPage: Bool { index >= stepCount }
@@ -57,6 +60,17 @@ struct CookingModeView: View {
         }
         .sheet(item: $activeTerm) { term in
             TermSheet(term: term)
+        }
+        .sheet(isPresented: $showsCookedSheet) {
+            CookedSheet(recipe: recipe, initialRating: rating) { result in
+                status = CookedRecorder.record(result, recipe: recipe, profile: profile, catalog: catalog)
+                saved = true
+                Task {
+                    if let message = await CookedRecorder.publish(result, recipe: recipe, community: community) {
+                        status = message
+                    }
+                }
+            }
         }
     }
 
@@ -184,7 +198,7 @@ struct CookingModeView: View {
             Text("Приятного аппетита!")
                 .font(.display(.largeTitle, weight: .bold))
                 .multilineTextAlignment(.center)
-            if let country = catalog.country(recipe.country) {
+            if recipe.communityID == nil, let country = catalog.country(recipe.country) {
                 Text("Отметьте блюдо — и в кулинарном паспорте появится штамп \(country.flag) \(country.name)")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -204,11 +218,10 @@ struct CookingModeView: View {
                 }
             }
             Button {
-                if !saved {
-                    profile.markCooked(recipe.id, rating: rating == 0 ? nil : rating, note: nil)
-                    saved = true
-                } else {
+                if saved {
                     dismiss()
+                } else {
+                    showsCookedSheet = true
                 }
             } label: {
                 Text(saved ? "Записано — закрыть" : "Записать в дневник")
@@ -219,6 +232,12 @@ struct CookingModeView: View {
                     .foregroundStyle(.white)
             }
             .buttonStyle(.plain)
+            if let status {
+                Text(status)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
             Spacer()
         }
         .padding(.horizontal, 28)

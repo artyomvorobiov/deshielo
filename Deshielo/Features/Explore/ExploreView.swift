@@ -21,6 +21,8 @@ struct RecipeFilter: Equatable {
 /// Вкладка «Рецепты»: поиск, инструменты, коллекции, фильтры.
 struct ExploreView: View {
     @Environment(\.catalog) private var catalog
+    @Environment(CommunityStore.self) private var community
+    @Environment(Router.self) private var router
 
     @State private var query = ""
     @State private var filter = RecipeFilter()
@@ -73,6 +75,19 @@ struct ExploreView: View {
         VStack(alignment: .leading, spacing: 14) {
             SectionHeader(title: query.isEmpty && filter.isEmpty ? "Все рецепты" : "Найдено",
                           subtitle: RussianPlural.phrase(list.count, "рецепт", "рецепта", "рецептов"))
+            if community.isConfigured, let text = query.nilIfBlank {
+                Button {
+                    router.searchCommunity(text)
+                } label: {
+                    Label("Искать «\(text)» в рецептах сообщества", systemImage: "person.2")
+                        .font(.subheadline.weight(.medium))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(14)
+                        .background(Theme.surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(Theme.accent)
+            }
             if list.isEmpty {
                 ContentUnavailableView.search(text: query)
             } else {

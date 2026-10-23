@@ -76,11 +76,14 @@ struct ShoppingItem: Codable, Identifiable, Hashable, Sendable {
     var key: String?
     var aisle: Aisle
     var recipeIDs: [String]
+    /// Название рецепта, которого нет в каталоге (например, из сообщества).
+    var recipeTitle: String?
     var isChecked: Bool
     var createdAt: Date
 
     init(id: UUID = UUID(), name: String, amount: Double? = nil, unit: String? = nil, key: String? = nil,
-         aisle: Aisle = .other, recipeIDs: [String] = [], isChecked: Bool = false, createdAt: Date = .now) {
+         aisle: Aisle = .other, recipeIDs: [String] = [], recipeTitle: String? = nil, isChecked: Bool = false,
+         createdAt: Date = .now) {
         self.id = id
         self.name = name
         self.amount = amount
@@ -88,6 +91,7 @@ struct ShoppingItem: Codable, Identifiable, Hashable, Sendable {
         self.key = key
         self.aisle = aisle
         self.recipeIDs = recipeIDs
+        self.recipeTitle = recipeTitle
         self.isChecked = isChecked
         self.createdAt = createdAt
     }
@@ -126,13 +130,20 @@ struct CookedEntry: Codable, Identifiable, Hashable, Sendable {
     var date: Date
     var rating: Int?
     var note: String?
+    /// Название — для рецептов не из каталога (из сообщества).
+    var title: String?
+    /// Имя файла с фото результата в папке JournalPhotos.
+    var photo: String?
 
-    init(id: UUID = UUID(), recipeID: String, date: Date = .now, rating: Int? = nil, note: String? = nil) {
+    init(id: UUID = UUID(), recipeID: String, date: Date = .now, rating: Int? = nil, note: String? = nil,
+         title: String? = nil, photo: String? = nil) {
         self.id = id
         self.recipeID = recipeID
         self.date = date
         self.rating = rating
         self.note = note
+        self.title = title
+        self.photo = photo
     }
 }
 

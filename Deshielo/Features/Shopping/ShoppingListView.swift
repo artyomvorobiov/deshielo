@@ -124,7 +124,7 @@ struct ShoppingListView: View {
             var order: [String] = []
             var grouped: [String: [ShoppingItem]] = [:]
             for item in items {
-                let title = item.recipeIDs.first.flatMap { catalog.recipe($0)?.title } ?? "Без рецепта"
+                let title = item.recipeIDs.first.flatMap { catalog.recipe($0)?.title } ?? item.recipeTitle ?? "Без рецепта"
                 if grouped[title] == nil { order.append(title) }
                 grouped[title, default: []].append(item)
             }

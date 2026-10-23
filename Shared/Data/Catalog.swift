@@ -158,6 +158,22 @@ struct Catalog: Sendable {
             .map(\.recipe)
     }
 
+    /// Ключ продукта по названию из чужого рецепта: «Творога 9%» → tvorog.
+    /// Базовые продукты (соль, масло, перец) — только при точном совпадении, чтобы «фасоль» не стала солью.
+    func pantryKey(matching name: String) -> String? {
+        let normalized = name.searchNormalized.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let exact = pantry.first(where: { $0.name.searchNormalized == normalized }) {
+            return exact.key
+        }
+        guard let first = normalized.split(whereSeparator: { !$0.isLetter }).first.map(String.init),
+              first.count >= 3 else { return nil }
+        return pantry.first { item in
+            let words = item.name.searchNormalized.split(whereSeparator: { !$0.isLetter })
+            guard !item.staple, words.count == 1, let word = words.first, word.count >= 4 else { return false }
+            return first.hasPrefix(String(word.prefix(word.count - 1))) && first.count <= word.count + 3
+        }?.key
+    }
+
     // MARK: - Текстовый поиск
 
     /// Поиск по названию, происхождению, шефу, стране, ингредиентам и описанию.

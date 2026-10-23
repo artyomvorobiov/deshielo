@@ -36,13 +36,16 @@ final class ProfileStore {
 
     func timesCooked(_ id: String) -> Int { profile.cooked.filter { $0.recipeID == id }.count }
 
-    func markCooked(_ id: String, rating: Int?, note: String?) {
-        profile.cooked.append(CookedEntry(recipeID: id, rating: rating, note: note?.nilIfBlank))
+    /// Запись в дневник. `title` нужен для рецептов не из каталога, `photo` — имя файла из JournalPhotos.
+    func markCooked(_ id: String, title: String? = nil, rating: Int?, note: String?, photo: String? = nil) {
+        profile.cooked.append(CookedEntry(recipeID: id, rating: rating, note: note?.nilIfBlank,
+                                          title: title, photo: photo))
         save()
     }
 
     func deleteCooked(_ entry: CookedEntry) {
         profile.cooked.removeAll { $0.id == entry.id }
+        JournalPhotos.delete(entry.photo)
         save()
     }
 
@@ -143,6 +146,7 @@ final class ProfileStore {
 
     func resetAll() {
         profile = UserProfile()
+        JournalPhotos.deleteAll()
         save()
     }
 

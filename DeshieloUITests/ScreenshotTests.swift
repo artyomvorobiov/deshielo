@@ -76,6 +76,31 @@ final class ScreenshotTests: XCTestCase {
 
         openLink("deshielo://passport")
         snap("23-passport")
+
+        selectTab("Сообщество")
+        snap("24-community")
+        if tapElement(containing: "Тыквенный суп") {
+            snap("25-community-recipe")
+            if scrollTo("Как получилось у других") {
+                snap("26-community-reviews")
+            }
+            goBack()
+        }
+        tapIfExists(app.buttons["Новый рецепт"])
+        snap("27-recipe-editor")
+        tapIfExists(app.buttons["Отмена"])
+        tapIfExists(app.buttons["Аккаунт сообщества"])
+        snap("28-community-account")
+        goBack()
+
+        openLink("deshielo://recipe/syrniki")
+        if scrollTo("Как получилось у других") {
+            snap("29-catalog-reviews")
+            if tapElement(containing: "Оценить и показать своё фото") {
+                snap("36-review-composer")
+                tapIfExists(app.buttons["Отмена"])
+            }
+        }
     }
 
     @MainActor
@@ -91,6 +116,8 @@ final class ScreenshotTests: XCTestCase {
         tapIfExists(app.buttons["Закрыть режим готовки"])
         selectTab("Покупки")
         snap("34-dark-shopping")
+        selectTab("Сообщество")
+        snap("35-dark-community")
     }
 
     // MARK: - Помощники
@@ -156,6 +183,22 @@ final class ScreenshotTests: XCTestCase {
             return false
         }
         element.tap()
+        return true
+    }
+
+    /// Прокручивает экран, пока не покажется текст. Возвращает false, если не нашёл.
+    @MainActor
+    private func scrollTo(_ text: String) -> Bool {
+        let element = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", text)).firstMatch
+        var swipes = 0
+        while !isReachable(element) && swipes < 14 {
+            app.swipeUp()
+            swipes += 1
+        }
+        guard isReachable(element) else {
+            XCTFail("Не найден текст «\(text)»")
+            return false
+        }
         return true
     }
 
