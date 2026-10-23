@@ -185,8 +185,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shot: [04-recipe, 16-profile, 17-journal, 24-community, 25-community-recipe, 26-community-reviews,
-               27-recipe-editor, 28-community-account, 29-catalog-reviews, 35-dark-community, 36-review-composer]
+        shot: [27-recipe-editor, 37-catalog-review-list]
     steps:
       - uses: actions/download-artifact@v4
         with:

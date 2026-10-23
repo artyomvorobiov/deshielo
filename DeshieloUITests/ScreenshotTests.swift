@@ -88,7 +88,7 @@ final class ScreenshotTests: XCTestCase {
         }
         tapIfExists(app.buttons["Новый рецепт"])
         snap("27-recipe-editor")
-        tapIfExists(app.buttons["Отмена"])
+        tapIfExists(app.buttons["Закрыть"])
         tapIfExists(app.buttons["Аккаунт сообщества"])
         snap("28-community-account")
         goBack()
@@ -100,6 +100,8 @@ final class ScreenshotTests: XCTestCase {
                 snap("36-review-composer")
                 tapIfExists(app.buttons["Отмена"])
             }
+            app.swipeUp(velocity: .slow)
+            snap("37-catalog-review-list")
         }
     }
 

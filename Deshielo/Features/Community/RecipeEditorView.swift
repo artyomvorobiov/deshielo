@@ -16,21 +16,41 @@ struct RecipeEditorView: View {
     @State private var newImages: [PickedImage] = []
     @State private var isSaving = false
     @State private var error: String?
+    @State private var confirmsDiscard = false
+    private let initialSnapshot: [String]
 
     init(existing: CommunityRecipe?, onSaved: @escaping (CommunityRecipe) -> Void) {
         self.existing = existing
         self.onSaved = onSaved
         let draft = existing.map(RecipeDraft.init(recipe:)) ?? RecipeDraft()
+        let ingredients = draft.ingredients.isEmpty
+            ? [EditableIngredient(), EditableIngredient(), EditableIngredient()]
+            : draft.ingredients.map(EditableIngredient.init)
+        let steps = draft.steps.isEmpty
+            ? [EditableStep(), EditableStep()]
+            : draft.steps.map(EditableStep.init)
         _draft = State(initialValue: draft)
-        _ingredients = State(initialValue: draft.ingredients.isEmpty
-                             ? [EditableIngredient(), EditableIngredient(), EditableIngredient()]
-                             : draft.ingredients.map(EditableIngredient.init))
-        _steps = State(initialValue: draft.steps.isEmpty
-                       ? [EditableStep(), EditableStep()]
-                       : draft.steps.map(EditableStep.init))
+        _ingredients = State(initialValue: ingredients)
+        _steps = State(initialValue: steps)
+        initialSnapshot = Self.snapshot(draft, ingredients, steps)
     }
 
     private var photoCount: Int { draft.keptPhotos.count + newImages.count }
+
+    /// Есть ли что терять, если закрыть редактор.
+    private var hasChanges: Bool {
+        !newImages.isEmpty || Self.snapshot(draft, ingredients, steps) != initialSnapshot
+    }
+
+    private static func snapshot(_ draft: RecipeDraft,
+                                 _ ingredients: [EditableIngredient],
+                                 _ steps: [EditableStep]) -> [String] {
+        [draft.title, draft.summary, draft.story, draft.category.rawValue, draft.country ?? "",
+         "\(draft.difficulty) \(draft.servings) \(draft.prepMinutes) \(draft.cookMinutes) \(draft.isPublished)",
+         draft.keptPhotos.map(\.name).joined(separator: ",")]
+            + ingredients.map { "\($0.name)|\($0.amount)|\($0.unit)" }
+            + steps.map { "\($0.text)|\($0.timer)" }
+    }
 
     var body: some View {
         NavigationStack {
@@ -39,9 +59,20 @@ struct RecipeEditorView: View {
             }
             .navigationTitle(existing == nil ? "Новый рецепт" : "Редактирование")
             .navigationBarTitleDisplayMode(.inline)
+            .confirmationDialog("Закрыть без сохранения?", isPresented: $confirmsDiscard, titleVisibility: .visible) {
+                Button("Не сохранять", role: .destructive) { dismiss() }
+                Button("Продолжить", role: .cancel) {}
+            } message: {
+                Text("Изменения в рецепте пропадут.")
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Отмена") { dismiss() }
+                    Button {
+                        if hasChanges { confirmsDiscard = true } else { dismiss() }
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .accessibilityLabel("Закрыть")
                 }
                 if community.user != nil {
                     ToolbarItem(placement: .confirmationAction) {
@@ -54,7 +85,7 @@ struct RecipeEditorView: View {
                 }
             }
         }
-        .interactiveDismissDisabled(isSaving)
+        .interactiveDismissDisabled(isSaving || hasChanges)
     }
 
     private var form: some View {

@@ -17,10 +17,13 @@ CATEGORIES = {"soup", "main", "side", "salad", "dessert", "baking", "breakfast",
 AISLES = {"vegetables", "fruits", "meat", "fish", "dairy", "bakery", "grocery", "spices",
           "drinks", "frozen", "other"}
 DIETS = {"vegetarian", "vegan", "gluten-free"}
-NOT_VEGETARIAN = {"beef-stock", "chicken-stock", "fish-sauce", "dashi", "gelatin", "worcestershire"}
-NOT_VEGAN = {"egg", "honey"}
+NOT_VEGETARIAN = {"beef-stock", "chicken-stock", "fish-sauce", "dashi", "gelatin", "worcestershire",
+                  "kimchi", "green-curry-paste", "tom-yum-paste"}
+NOT_VEGAN = {"egg", "honey", "mayonnaise"}
 GLUTEN = {"flour", "bread", "baguette", "pasta", "savoiardi", "puff-pastry", "beer",
-          "semolina", "bliny-ready", "doubanjiang"}
+          "semolina", "bliny-ready", "doubanjiang", "rye-bread", "rye-sourdough", "kvass",
+          "pearl-barley", "bulgur", "oats", "noodles", "breadcrumbs", "panko", "filo", "lavash",
+          "dumpling-wrappers", "soy-sauce", "kecap-manis", "hoisin", "gochujang"}
 HEX = re.compile(r"^#[0-9A-Fa-f]{6}$")
 ID = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 
