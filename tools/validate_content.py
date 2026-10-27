@@ -23,7 +23,8 @@ NOT_VEGAN = {"egg", "honey", "mayonnaise"}
 GLUTEN = {"flour", "bread", "baguette", "pasta", "savoiardi", "puff-pastry", "beer",
           "semolina", "bliny-ready", "doubanjiang", "rye-bread", "rye-sourdough", "kvass",
           "pearl-barley", "bulgur", "oats", "noodles", "breadcrumbs", "panko", "filo", "lavash",
-          "dumpling-wrappers", "soy-sauce", "kecap-manis", "hoisin", "gochujang"}
+          "dumpling-wrappers", "soy-sauce", "kecap-manis", "hoisin", "gochujang", "burger-buns",
+          "cookies", "sponge-cake"}
 HEX = re.compile(r"^#[0-9A-Fa-f]{6}$")
 ID = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 

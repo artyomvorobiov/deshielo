@@ -123,7 +123,7 @@ final class CommunityClientTests: XCTestCase {
                                      prepMinutes: 10, cookMinutes: 15, servings: 2,
                                      ingredients: [CommunityIngredient(name: "Творога 9%", amount: 400, unit: "g"),
                                                    CommunityIngredient(name: "Яйцо", amount: 1, unit: "pcs"),
-                                                   CommunityIngredient(name: "Фасоль", amount: 1, unit: "pcs"),
+                                                   CommunityIngredient(name: "Топинамбур", amount: 1, unit: "pcs"),
                                                    CommunityIngredient(name: "Соль", unit: "toTaste")],
                                      steps: [CommunityStep(title: "Тесто", text: "Смешайте всё.", timer: 5)],
                                      photos: [], isPublished: true, isHidden: false, rating: .empty, created: .now)
@@ -136,7 +136,7 @@ final class CommunityClientTests: XCTestCase {
         XCTAssertEqual(catalog.recipe("plov")?.reviewTarget, .catalog("plov"))
 
         let items = ShoppingMerger.items(for: converted, scale: 1, catalog: catalog, includeStaples: false, onlyIndices: nil)
-        XCTAssertEqual(items.map(\.name), ["Творог", "Яйца", "Фасоль"])
+        XCTAssertEqual(items.map(\.name), ["Творог", "Яйца", "Топинамбур"])
         XCTAssertEqual(items.first?.recipeTitle, "Сырники")
     }
 
