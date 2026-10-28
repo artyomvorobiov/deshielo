@@ -125,6 +125,7 @@ final class ScreenshotTests: XCTestCase {
         openLink("deshielo://tea/longjing")
         snap("43-tea")
         if scrollTo("Заваривание") {
+            app.swipeUp()
             snap("44-tea-brewing")
         }
 
@@ -240,7 +241,7 @@ final class ScreenshotTests: XCTestCase {
     private func scrollTo(_ text: String) -> Bool {
         let element = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", text)).firstMatch
         var swipes = 0
-        while !isReachable(element) && swipes < 14 {
+        while !isReachable(element) && swipes < 20 {
             app.swipeUp()
             swipes += 1
         }

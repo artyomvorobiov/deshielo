@@ -98,7 +98,8 @@ final class DrinkPairingTests: XCTestCase {
     }
 
     func testClassicWinePairings() throws {
-        XCTAssertEqual(try wine("boeuf-bourguignon"), "red-rich")
+        XCTAssertEqual(try wine("boeuf-bourguignon"), "red-light", "бургундское к бургундскому")
+        XCTAssertEqual(try wine("bife-chimichurri"), "red-rich")
         XCTAssertEqual(try wine("coq-au-vin"), "red-light")
         XCTAssertEqual(try wine("tom-yum"), "aromatic")
         XCTAssertEqual(try wine("risotto-milanese"), "white-rich")
@@ -111,8 +112,8 @@ final class DrinkPairingTests: XCTestCase {
 
     func testMatchedIngredientsExplainTheChoice() throws {
         let pick = try XCTUnwrap(pairings.wine(for: try recipe("boeuf-bourguignon")))
-        XCTAssertTrue(pick.matched.contains("beef"))
-        XCTAssertTrue(pairings.ingredientNames(pick).contains("говядина"))
+        XCTAssertTrue(pick.matched.contains("red-wine"))
+        XCTAssertTrue(pairings.ingredientNames(pick).contains("красное сухое вино"))
     }
 
     func testSweetDishesGetOnlyDessertWines() throws {

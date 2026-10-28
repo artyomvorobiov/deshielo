@@ -266,10 +266,12 @@
           "chicken-thigh",
           "chicken",
           "pork",
-          "red-wine"
+          "red-wine",
+          "bacon"
         ],
         "avoid": [
-          "chili"
+          "chili",
+          "horseradish"
         ],
         "note": "Мягкие танины не спорят с птицей, грибами и даже лососем."
       }

@@ -137,6 +137,7 @@ struct DrinkMapView: View {
         }
         .onChange(of: layer) { _, _ in
             selected = nil
+            withAnimation { position = .automatic }
         }
         .navigationTitle(DrinksConfig.showsWine ? "Карта вин и чая" : "Карта чая")
         .navigationBarTitleDisplayMode(.inline)

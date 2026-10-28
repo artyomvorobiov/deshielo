@@ -185,9 +185,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shot: [11-explore, 16-profile, 38-drinks, 39-drinks-more, 40-drinks-tea, 41-grape, 42-grape-more, 43-tea,
-               44-tea-brewing, 45-wine-region, 46-recipe-pairing, 47-tastings, 48-tasting-editor, 49-drink-map,
-               50-dark-tea]
+        shot: [26-community-reviews, 38-drinks, 44-tea-brewing, 46-recipe-pairing]
     steps:
       - uses: actions/download-artifact@v4
         with:
