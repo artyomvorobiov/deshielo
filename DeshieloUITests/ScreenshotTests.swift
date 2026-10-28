@@ -143,6 +143,8 @@ final class ScreenshotTests: XCTestCase {
         tapIfExists(app.buttons["Отмена"])
 
         openLink("deshielo://drinks")
+        // Экран раздела мог остаться на вкладке «Чай» с прошлого захода.
+        tapIfExists(app.buttons["Вино"])
         if tapElement(containing: "Карта вин и чая") {
             snap("49-drink-map", delay: 4)
         }

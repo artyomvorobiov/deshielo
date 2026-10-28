@@ -37,7 +37,7 @@ struct DrinksView: View {
         }
         .screenBackground()
         .navigationTitle(showsWine ? "Вино и чай" : "Чайная карта")
-        .searchable(text: $query, prompt: showsWine ? "Сорт, регион, чай или аромат" : "Чай, страна или аромат")
+        .searchable(text: $query, prompt: Text(showsWine ? "Сорт, регион, чай или аромат" : "Чай, страна или аромат"))
         .animation(.default, value: section)
     }
 
