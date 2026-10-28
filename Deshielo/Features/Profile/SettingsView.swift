@@ -5,6 +5,7 @@ import UserNotifications
 struct SettingsView: View {
     @Environment(\.catalog) private var catalog
     @Environment(ProfileStore.self) private var profile
+    @Environment(TastingStore.self) private var tastings
     @Environment(\.openURL) private var openURL
 
     @State private var notificationStatus: UNAuthorizationStatus?
@@ -81,7 +82,7 @@ struct SettingsView: View {
                     confirmsReset = true
                 }
             } footer: {
-                Text("Удалит избранное, дневник, заметки, меню и отметки «Из холодильника». Список покупок останется.")
+                Text("Удалит избранное, дневник готовки, дегустации, заметки, меню и отметки «Из холодильника». Список покупок останется.")
             }
         }
         .navigationTitle("Настройки")
@@ -89,7 +90,10 @@ struct SettingsView: View {
             notificationStatus = await NotificationService.authorizationStatus()
         }
         .confirmationDialog("Сбросить все личные данные?", isPresented: $confirmsReset, titleVisibility: .visible) {
-            Button("Сбросить", role: .destructive) { profile.resetAll() }
+            Button("Сбросить", role: .destructive) {
+                profile.resetAll()
+                tastings.resetAll()
+            }
         }
     }
 

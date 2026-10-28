@@ -106,6 +106,49 @@ final class ScreenshotTests: XCTestCase {
     }
 
     @MainActor
+    func testDrinkScreens() {
+        launch()
+        openLink("deshielo://drinks")
+        snap("38-drinks")
+        app.swipeUp()
+        snap("39-drinks-more")
+        app.swipeDown()
+        app.swipeDown()
+        tapIfExists(app.buttons["Чай"])
+        snap("40-drinks-tea")
+
+        openLink("deshielo://grape/saperavi")
+        snap("41-grape")
+        app.swipeUp()
+        snap("42-grape-more")
+
+        openLink("deshielo://tea/longjing")
+        snap("43-tea")
+        if scrollTo("Заваривание") {
+            snap("44-tea-brewing")
+        }
+
+        openLink("deshielo://wine-region/kakheti")
+        snap("45-wine-region", delay: 3)
+
+        openLink("deshielo://recipe/boeuf-bourguignon")
+        if scrollTo("Что налить") {
+            snap("46-recipe-pairing")
+        }
+
+        openLink("deshielo://tastings")
+        snap("47-tastings")
+        tapIfExists(app.buttons["Новая дегустация"])
+        snap("48-tasting-editor")
+        tapIfExists(app.buttons["Отмена"])
+
+        openLink("deshielo://drinks")
+        if tapElement(containing: "Карта вин и чая") {
+            snap("49-drink-map", delay: 4)
+        }
+    }
+
+    @MainActor
     func testDarkScreens() {
         launch(dark: true)
         snap("30-dark-today")
@@ -120,6 +163,8 @@ final class ScreenshotTests: XCTestCase {
         snap("34-dark-shopping")
         selectTab("Сообщество")
         snap("35-dark-community")
+        openLink("deshielo://tea/sencha")
+        snap("50-dark-tea")
     }
 
     // MARK: - Помощники

@@ -6,11 +6,14 @@ import UserNotifications
 
 struct CookingTimer: Identifiable, Hashable {
     let id: UUID
+    /// Рецепт или другой владелец таймера: чай заваривается под «tea:<id>».
     let recipeID: String
     let recipeTitle: String
     let label: String
     let startDate: Date
     let endDate: Date
+    /// Текст уведомления, если стандартный («Пора переходить к следующему шагу») не подходит.
+    var message: String?
     var activityID: String?
 
     var duration: TimeInterval { endDate.timeIntervalSince(startDate) }
@@ -48,14 +51,21 @@ final class TimerCenter {
     }
 
     func start(label: String, minutes: Double, recipe: Recipe) {
+        start(label: label, minutes: minutes, ownerID: recipe.id, title: recipe.title, palette: recipe.palette)
+    }
+
+    /// Таймер не для рецепта, например для заваривания чая. `ownerID` открывается по нажатию
+    /// на Live Activity — Router понимает префикс «tea:».
+    func start(label: String, minutes: Double, ownerID: String, title: String, palette: [String],
+               message: String? = nil) {
         guard minutes > 0 else { return }
-        if let existing = timer(label: label, recipeID: recipe.id) {
+        if let existing = timer(label: label, recipeID: ownerID) {
             cancel(existing)
         }
         let now = Date()
-        var timer = CookingTimer(id: UUID(), recipeID: recipe.id, recipeTitle: recipe.title, label: label,
-                                 startDate: now, endDate: now.addingTimeInterval(minutes * 60))
-        timer.activityID = LiveActivityController.start(timer, palette: recipe.palette)
+        var timer = CookingTimer(id: UUID(), recipeID: ownerID, recipeTitle: title, label: label,
+                                 startDate: now, endDate: now.addingTimeInterval(minutes * 60), message: message)
+        timer.activityID = LiveActivityController.start(timer, palette: palette)
         timers.append(timer)
         timers.sort { $0.endDate < $1.endDate }
         let scheduled = timer
@@ -145,7 +155,7 @@ enum NotificationService {
         }
         let content = UNMutableNotificationContent()
         content.title = "Таймер: \(timer.label)"
-        content.body = "Готово — \(timer.recipeTitle). Пора переходить к следующему шагу."
+        content.body = timer.message ?? "Готово — \(timer.recipeTitle). Пора переходить к следующему шагу."
         content.sound = .default
         content.userInfo = ["recipeID": timer.recipeID]
         let interval = max(1, timer.endDate.timeIntervalSinceNow)

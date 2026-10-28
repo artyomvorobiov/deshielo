@@ -5,6 +5,7 @@ struct ProfileView: View {
     @Environment(\.catalog) private var catalog
     @Environment(ProfileStore.self) private var profile
     @Environment(CommunityStore.self) private var community
+    @Environment(TastingStore.self) private var tastings
 
     var body: some View {
         let passport = PassportSummary(profile: profile.profile, catalog: catalog)
@@ -28,6 +29,10 @@ struct ProfileView: View {
                 NavigationLink(value: Route.fridge) {
                     CountRow(title: "Из холодильника", systemImage: "refrigerator", count: profile.profile.pantry.count)
                 }
+                NavigationLink(value: Route.tastings) {
+                    CountRow(title: "Дегустации", systemImage: DrinksConfig.showsWine ? "wineglass" : "cup.and.saucer",
+                             count: tastings.tastings.count)
+                }
             }
 
             if community.isConfigured {
@@ -40,6 +45,10 @@ struct ProfileView: View {
             }
 
             Section("Инструменты") {
+                NavigationLink(value: Route.drinks) {
+                    Label(DrinksConfig.showsWine ? "Винная и чайная карта" : "Чайная карта",
+                          systemImage: DrinksConfig.showsWine ? "wineglass" : "cup.and.saucer")
+                }
                 NavigationLink(value: Route.converter) {
                     Label("Конвертер мер и старинные меры", systemImage: "scalemass")
                 }

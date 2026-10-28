@@ -44,6 +44,7 @@ struct RecipeDetailView: View {
                              onTerm: { activeTerm = $0 },
                              onTimer: startTimer)
                 extras
+                DrinkPairingSection(recipe: recipe)
                 personal
                 ReviewsSection(target: .catalog(recipe.id), recipeTitle: recipe.title,
                                summary: community.rating(forCatalog: recipe.id)) { toast = $0 }

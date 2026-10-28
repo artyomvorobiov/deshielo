@@ -29,6 +29,7 @@ enum DemoData {
         }
         ProfileStorage.save(demoProfile)
         ShoppingListStorage.save(shoppingList(catalog: catalog))
+        TastingStorage.save(tastings())
     }
 
     @MainActor
@@ -36,6 +37,39 @@ enum DemoData {
         let renderer = ImageRenderer(content: DishArtwork(recipe: recipe, showsYear: false).frame(width: 600, height: 600))
         renderer.scale = 1
         return renderer.uiImage.flatMap { JournalPhotos.save($0) }
+    }
+
+    /// Дегустационный дневник: два вина и два чая, у части — «фото» (иллюстрация напитка).
+    @MainActor
+    private static func tastings(drinks: DrinkCatalog = .bundled) -> [Tasting] {
+        let now = Date()
+        func day(_ offset: Int) -> Date {
+            Calendar.current.date(byAdding: .day, value: offset, to: now) ?? now
+        }
+        func photo<Content: View>(_ content: Content) -> String? {
+            let renderer = ImageRenderer(content: content.frame(width: 600, height: 600))
+            renderer.scale = 1
+            return renderer.uiImage.flatMap { JournalPhotos.save($0) }
+        }
+        var list = [
+            Tasting(kind: .wine, name: "Красностоп", date: day(-2), vintage: 2021, styleID: "red-rich",
+                    grapeID: "krasnostop", regionID: "don", rating: 5, aromas: ["вишня", "специи", "черноплодная рябина"],
+                    note: "К говядине по-бургундски — отлично. Открыть за час до ужина.", recipeID: "boeuf-bourguignon"),
+            Tasting(kind: .tea, name: "Лунцзин весеннего сбора", date: day(-4), teaID: "longjing", rating: 5,
+                    aromas: ["каштан", "свежая зелень"], note: "Второй пролив — самый вкусный."),
+            Tasting(kind: .wine, name: "Шабли", date: day(-11), vintage: 2022, styleID: "white-light",
+                    grapeID: "chardonnay", regionID: "burgundy", rating: 4, aromas: ["яблоко", "лимон"],
+                    note: "Свежее, с минеральностью. С устрицами было бы идеально."),
+            Tasting(kind: .tea, name: "Иван-чай", date: day(-16), teaID: "ivan-chai", rating: 4,
+                    aromas: ["мёд", "сухофрукты"])
+        ]
+        if let grape = drinks.grape("krasnostop") {
+            list[0].photo = photo(DrinkArtwork(grape: grape))
+        }
+        if let tea = drinks.tea("longjing") {
+            list[1].photo = photo(DrinkArtwork(tea: tea))
+        }
+        return list
     }
 
     private static func profile(catalog: Catalog) -> UserProfile {

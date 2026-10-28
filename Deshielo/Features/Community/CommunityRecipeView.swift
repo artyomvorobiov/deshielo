@@ -97,6 +97,7 @@ struct CommunityRecipeView: View {
                     timers.start(label: label, minutes: minutes, recipe: converted)
                     toast = "Таймер «\(label)» на \(DurationText.timerTitle(minutes: minutes))"
                 }
+                DrinkPairingSection(recipe: converted)
                 ReviewsSection(target: .community(recipe.id), recipeTitle: recipe.title, summary: recipe.rating,
                                allowsReview: !isMine) { toast = $0 }
                 Text("Рецепт опубликовал участник сообщества — редакция Deshielo его не проверяла. Калорийность не указана.")

@@ -9,6 +9,7 @@ struct DeshieloApp: App {
     @State private var shopping: ShoppingStore
     @State private var timers = TimerCenter()
     @State private var community: CommunityStore
+    @State private var tastings: TastingStore
 
     private let catalog = Catalog.bundled
 
@@ -21,6 +22,7 @@ struct DeshieloApp: App {
         _profile = State(initialValue: ProfileStore())
         _shopping = State(initialValue: ShoppingStore())
         _community = State(initialValue: CommunityStore.make())
+        _tastings = State(initialValue: TastingStore())
     }
 
     var body: some Scene {
@@ -32,6 +34,7 @@ struct DeshieloApp: App {
                 .environment(shopping)
                 .environment(timers)
                 .environment(community)
+                .environment(tastings)
                 .tint(Theme.accent)
                 #if DEBUG
                 .preferredColorScheme(DemoData.colorScheme)

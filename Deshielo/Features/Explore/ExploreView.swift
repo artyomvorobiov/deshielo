@@ -105,7 +105,7 @@ struct ExploreView: View {
     }
 }
 
-/// Быстрые инструменты: холодильник, карта, машина времени, конвертер, словарь.
+/// Быстрые инструменты: вино и чай, холодильник, карта, машина времени, конвертер, словарь.
 struct ToolsRow: View {
     private struct Tool: Identifiable {
         let id: String
@@ -115,6 +115,9 @@ struct ToolsRow: View {
     }
 
     private let tools = [
+        DrinksConfig.showsWine
+            ? Tool(id: "drinks", title: "Вино и чай", symbol: "wineglass", route: .drinks)
+            : Tool(id: "drinks", title: "Чайная карта", symbol: "cup.and.saucer", route: .drinks),
         Tool(id: "fridge", title: "Из холодильника", symbol: "refrigerator", route: .fridge),
         Tool(id: "map", title: "Карта вкусов", symbol: "map", route: .tasteMap),
         Tool(id: "time", title: "Машина времени", symbol: "hourglass", route: .timeMachine),

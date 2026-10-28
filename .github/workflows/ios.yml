@@ -175,3 +175,38 @@ jobs:
           name: screenshots
           path: screenshots
           if-no-files-found: ignore
+
+  # Временно: уменьшенные скриншоты новых экранов печатаются в журнал задачи для проверки.
+  screenshot-log:
+    name: Скриншот ${{ matrix.shot }}
+    needs: build
+    if: always()
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shot: [11-explore, 16-profile, 38-drinks, 39-drinks-more, 40-drinks-tea, 41-grape, 42-grape-more, 43-tea,
+               44-tea-brewing, 45-wine-region, 46-recipe-pairing, 47-tastings, 48-tasting-editor, 49-drink-map,
+               50-dark-tea]
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: screenshots
+          path: screenshots
+      - name: Печать
+        env:
+          SHOT: ${{ matrix.shot }}
+        run: |
+          python3 -m venv /tmp/venv
+          /tmp/venv/bin/pip install --quiet pillow
+          /tmp/venv/bin/python - <<'PY'
+          import base64, io, os
+          from PIL import Image
+          name = os.environ["SHOT"]
+          image = Image.open(f"screenshots/{name}.png").convert("RGB")
+          width = 390
+          image = image.resize((width, round(image.height * width / image.width)), Image.LANCZOS)
+          buffer = io.BytesIO()
+          image.save(buffer, "WEBP", quality=62, method=6)
+          print(f"SHOT {name} {len(buffer.getvalue())} {base64.b64encode(buffer.getvalue()).decode()}")
+          PY

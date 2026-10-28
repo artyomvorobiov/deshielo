@@ -25,10 +25,12 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Камера нужна, чтобы сфотографировать готовое блюдо для дневника, отзыва или своего рецепта.</string>
+	<string>Камера нужна, чтобы сфотографировать готовое блюдо для дневника, отзыва или своего рецепта, а также этикетку вина или пачку чая для дегустационного дневника.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
+	<key>ShowsWine</key>
+	<string>$(SHOW_WINE)</string>
 </dict>
 </plist>

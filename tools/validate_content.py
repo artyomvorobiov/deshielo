@@ -70,6 +70,165 @@ def require(obj, fields, where):
             err(where, f"поле «{field}» должно быть {kind}")
 
 
+COUNTRY = re.compile(r"^[A-Z]{2}$")
+
+
+def check_palette(obj, where):
+    palette = obj.get("palette")
+    if not isinstance(palette, list) or len(palette) != 3 or not all(HEX.match(str(c)) for c in palette):
+        err(where, "palette — три цвета #RRGGBB")
+
+
+def check_place(obj, where):
+    if not COUNTRY.match(str(obj.get("country", ""))):
+        err(where, "country — двухбуквенный код ISO, например FR")
+    lat, lon = obj.get("lat"), obj.get("lon")
+    if not isinstance(lat, (int, float)) or not -90 <= lat <= 90:
+        err(where, "lat — широта от −90 до 90")
+    if not isinstance(lon, (int, float)) or not -180 <= lon <= 180:
+        err(where, "lon — долгота от −180 до 180")
+
+
+def check_pairing(pairing, where, pantry_keys, term_ids):
+    if not isinstance(pairing, dict):
+        err(where, "нет блока pairing")
+        return
+    if not isinstance(pairing.get("note"), str) or not pairing["note"].strip():
+        err(where, "в pairing нет текста note")
+    if not (pairing.get("keys") or pairing.get("categories") or pairing.get("countries")):
+        err(where, "в pairing нужны keys, categories или countries")
+    for field in ("keys", "avoid"):
+        for key in pairing.get(field, []):
+            if key not in pantry_keys:
+                err(where, f"pairing.{field}: неизвестный продукт «{key}»")
+    for category in pairing.get("categories", []):
+        if category not in CATEGORIES:
+            err(where, f"pairing.categories: неизвестная категория «{category}»")
+    for code in pairing.get("countries", []):
+        if not COUNTRY.match(str(code)):
+            err(where, f"pairing.countries: «{code}» — не код страны")
+    for term in pairing.get("techniques", []):
+        if term not in term_ids:
+            err(where, f"pairing.techniques: неизвестная техника «{term}»")
+    if "sweets" in pairing and not isinstance(pairing["sweets"], bool):
+        err(where, "pairing.sweets — true или false")
+
+
+def check_brewing(brewing, where):
+    if not isinstance(brewing, dict):
+        err(where, "нет блока brewing")
+        return
+    temperature, grams, water = brewing.get("temperature"), brewing.get("grams"), brewing.get("water")
+    if not isinstance(temperature, int) or not 50 <= temperature <= 100:
+        err(where, "brewing.temperature — целое от 50 до 100 °C")
+    if not isinstance(grams, (int, float)) or not 0 < grams <= 50:
+        err(where, "brewing.grams — от 0 до 50 г")
+    if not isinstance(water, int) or not 30 <= water <= 1000:
+        err(where, "brewing.water — целое от 30 до 1000 мл")
+    steeps = brewing.get("steeps")
+    if not isinstance(steeps, list) or not all(isinstance(t, int) and 5 <= t <= 900 for t in steeps):
+        err(where, "brewing.steeps — секунды, целые от 5 до 900")
+    elif not steeps and not brewing.get("note"):
+        err(where, "без steeps нужен note — как заваривать")
+
+
+def validate_drinks(pantry_keys, term_ids, recipe_ids):
+    """Винная и чайная карта: wine.json и tea.json."""
+    wine = load("wine.json") or {}
+    tea = load("tea.json") or {}
+    styles, grapes, regions = wine.get("styles", []), wine.get("grapes", []), wine.get("regions", [])
+    types, teas = tea.get("types", []), tea.get("teas", [])
+
+    style_ids = unique(styles, "id", "wine.json/styles")
+    grape_ids = unique(grapes, "id", "wine.json/grapes")
+    region_ids = unique(regions, "id", "wine.json/regions")
+    for s in styles:
+        where = f"wine/styles/{s.get('id')}"
+        require(s, {"id": str, "name": str, "summary": str, "description": str, "serving": str, "glass": str}, where)
+        check_palette(s, where)
+        check_pairing(s.get("pairing"), where, pantry_keys, term_ids)
+    used_styles = set()
+    for g in grapes:
+        where = f"wine/grapes/{g.get('id')}"
+        require(g, {"id": str, "name": str, "original": str, "summary": str, "story": str, "vivino": str,
+                    "aromas": list, "styles": list, "regions": list}, where)
+        if g.get("color") not in {"red", "white"}:
+            err(where, "color — red или white")
+        for field in ("body", "acidity", "tannin"):
+            if not isinstance(g.get(field), int) or not 1 <= g[field] <= 5:
+                err(where, f"{field} — целое от 1 до 5")
+        if not g.get("aromas"):
+            err(where, "нужен хотя бы один аромат")
+        if not g.get("styles"):
+            err(where, "нужен хотя бы один стиль")
+        for style in g.get("styles", []):
+            used_styles.add(style)
+            if style not in style_ids:
+                err(where, f"неизвестный стиль «{style}»")
+        for region in g.get("regions", []):
+            if region not in region_ids:
+                err(where, f"неизвестный регион «{region}»")
+        check_palette(g, where)
+    grapes_by_id = {g.get("id"): g for g in grapes}
+    for r in regions:
+        where = f"wine/regions/{r.get('id')}"
+        require(r, {"id": str, "name": str, "original": str, "summary": str, "story": str, "vivino": str,
+                    "grapes": list}, where)
+        check_place(r, where)
+        if not r.get("grapes"):
+            err(where, "нужен хотя бы один сорт")
+        for grape in r.get("grapes", []):
+            if grape not in grape_ids:
+                err(where, f"неизвестный сорт «{grape}»")
+            elif r.get("id") not in grapes_by_id[grape].get("regions", []):
+                err(where, f"сорт «{grape}» не ссылается на этот регион")
+    for g in grapes:
+        for region in g.get("regions", []):
+            match = next((r for r in regions if r.get("id") == region), None)
+            if match and g.get("id") not in match.get("grapes", []):
+                err(f"wine/grapes/{g.get('id')}", f"регион «{region}» не ссылается на этот сорт")
+    for style in style_ids - used_styles:
+        warn("wine.json", f"у стиля «{style}» нет ни одного сорта")
+    sweets = (wine.get("fallback") or {}).get("sweets")
+    sweet_styles = {s.get("id") for s in styles if (s.get("pairing") or {}).get("sweets")}
+    if sweets not in sweet_styles:
+        err("wine.json", "fallback.sweets — стиль с pairing.sweets = true")
+
+    type_ids = unique(types, "id", "tea.json/types")
+    tea_ids = unique(teas, "id", "tea.json/teas")
+    for t in types:
+        where = f"tea/types/{t.get('id')}"
+        require(t, {"id": str, "name": str, "oxidation": str, "summary": str, "description": str}, where)
+        check_palette(t, where)
+        check_brewing(t.get("brewing"), where)
+    used_types = set()
+    for t in teas:
+        where = f"tea/teas/{t.get('id')}"
+        require(t, {"id": str, "name": str, "original": str, "origin": str, "summary": str, "story": str,
+                    "aromas": list}, where)
+        used_types.add(t.get("type"))
+        if t.get("type") not in type_ids:
+            err(where, f"неизвестный тип чая «{t.get('type')}»")
+        if not t.get("aromas"):
+            err(where, "нужен хотя бы один аромат")
+        check_place(t, where)
+        check_palette(t, where)
+        check_brewing(t.get("brewing"), where)
+        check_pairing(t.get("pairing"), where, pantry_keys, term_ids)
+        if t.get("recipe") and t["recipe"] not in recipe_ids:
+            err(where, f"неизвестный рецепт «{t['recipe']}»")
+    for kind in type_ids - used_types:
+        warn("tea.json", f"у типа «{kind}» нет ни одного чая")
+    for key, value in (tea.get("fallback") or {}).items():
+        if key != "sweets" and key not in CATEGORIES:
+            err("tea.json", f"fallback: неизвестная категория «{key}»")
+        if value not in tea_ids:
+            err("tea.json", f"fallback: неизвестный чай «{value}»")
+
+    return (f"Вино: стилей {len(style_ids)}, сортов {len(grape_ids)}, регионов {len(region_ids)}; "
+            f"чай: типов {len(type_ids)}, сортов {len(tea_ids)}")
+
+
 def main() -> int:
     pantry = load("pantry.json") or []
     collections = load("collections.json") or []
@@ -268,6 +427,8 @@ def main() -> int:
         if not measures.get(section):
             err("measures.json", f"нет раздела «{section}»")
 
+    drinks = validate_drinks(pantry_keys, term_ids, recipe_ids)
+
     for code in country_codes - used_countries:
         warn("countries.json", f"у страны «{code}» нет ни одного рецепта")
     for chef in chef_ids - used_chefs:
@@ -275,6 +436,7 @@ def main() -> int:
 
     print(f"Рецептов: {len(recipe_ids)}, продуктов: {len(pantry_keys)}, техник: {len(term_ids)}, "
           f"стран: {len(country_codes)}, шефов: {len(chef_ids)}, фактов: {len(facts)}")
+    print(drinks)
     for line in warnings:
         print(line)
     for line in errors:

@@ -25,6 +25,14 @@ enum Route: Hashable {
     case communityRecipe(String)
     case communityAccount
     case communityRules
+    case drinks
+    case wineStyle(String)
+    case grape(String)
+    case wineRegion(String)
+    case teaType(String)
+    case tea(String)
+    case drinkMap
+    case tastings
 }
 
 /// Что готовим: рецепт из каталога или из сообщества — поэтому передаётся сам рецепт, а не id.
@@ -62,7 +70,7 @@ final class Router {
         }
     }
 
-    func open(_ link: DeepLink, catalog: Catalog = .bundled) {
+    func open(_ link: DeepLink, catalog: Catalog = .bundled, drinks: DrinkCatalog = .bundled) {
         switch link {
         case .today:
             tab = .today
@@ -71,6 +79,11 @@ final class Router {
             // Таймеры рецептов сообщества ссылаются на «community:<id>».
             if id.hasPrefix(Recipe.communityPrefix) {
                 open(.communityRecipe(String(id.dropFirst(Recipe.communityPrefix.count))), catalog: catalog)
+                return
+            }
+            // Таймеры заваривания ссылаются на «tea:<id>».
+            if id.hasPrefix(Tea.timerPrefix) {
+                open(.tea(String(id.dropFirst(Tea.timerPrefix.count))), catalog: catalog, drinks: drinks)
                 return
             }
             guard catalog.recipe(id) != nil else { return }
@@ -92,6 +105,28 @@ final class Router {
         case .passport:
             tab = .profile
             profilePath = [.passport]
+        case .drinks:
+            tab = .explore
+            explorePath = [.drinks]
+        case .tea(let id):
+            guard drinks.tea(id) != nil else { return }
+            tab = .explore
+            explorePath = [.drinks, .tea(id)]
+        case .grape(let id):
+            guard DrinksConfig.showsWine, drinks.grape(id) != nil else { return }
+            tab = .explore
+            explorePath = [.drinks, .grape(id)]
+        case .wineRegion(let id):
+            guard DrinksConfig.showsWine, drinks.region(id) != nil else { return }
+            tab = .explore
+            explorePath = [.drinks, .wineRegion(id)]
+        case .wineStyle(let id):
+            guard DrinksConfig.showsWine, drinks.style(id) != nil else { return }
+            tab = .explore
+            explorePath = [.drinks, .wineStyle(id)]
+        case .tastings:
+            tab = .profile
+            profilePath = [.tastings]
         }
     }
 

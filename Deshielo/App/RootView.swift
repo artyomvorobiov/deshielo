@@ -72,6 +72,7 @@ struct RootView: View {
 /// Сопоставление маршрутов и экранов — одно для всех вкладок.
 struct RouteDestinations: ViewModifier {
     @Environment(\.catalog) private var catalog
+    @Environment(\.drinks) private var drinks
 
     func body(content: Content) -> some View {
         content.navigationDestination(for: Route.self) { route in
@@ -128,6 +129,32 @@ struct RouteDestinations: ViewModifier {
             CommunityAccountView()
         case .communityRules:
             CommunityRulesView()
+        case .drinks:
+            DrinksView()
+        case .wineStyle(let id):
+            if let style = drinks.style(id) {
+                WineStyleView(style: style)
+            }
+        case .grape(let id):
+            if let grape = drinks.grape(id) {
+                GrapeView(grape: grape)
+            }
+        case .wineRegion(let id):
+            if let region = drinks.region(id) {
+                WineRegionView(region: region)
+            }
+        case .teaType(let id):
+            if let type = drinks.teaType(id) {
+                TeaTypeView(type: type)
+            }
+        case .tea(let id):
+            if let tea = drinks.tea(id) {
+                TeaView(tea: tea)
+            }
+        case .drinkMap:
+            DrinkMapView()
+        case .tastings:
+            TastingsView()
         }
     }
 }
